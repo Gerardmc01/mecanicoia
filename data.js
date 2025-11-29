@@ -288,6 +288,54 @@ const dashboardLights = [
         ],
         urgency: 'Actuar pronto para evitar obstrucción total',
         estimatedCost: '0€ (regeneración) - 1500€ (reemplazo)'
+    },
+    {
+        id: 'washer-fluid',
+        name: 'Líquido Limpiaparabrisas',
+        icon: '⛲',
+        color: '#FFD23F',
+        severity: 'low',
+        description: 'Nivel bajo de líquido limpiaparabrisas',
+        causes: ['Depósito vacío', 'Fuga en el depósito', 'Sensor atascado'],
+        actions: ['Rellenar depósito con líquido específico', 'No usar solo agua (se congela/cal)', 'Revisar si hay fugas'],
+        urgency: 'Baja',
+        estimatedCost: '5€ - 10€'
+    },
+    {
+        id: 'doors',
+        name: 'Puerta Abierta',
+        icon: '🚪',
+        color: '#EF476F',
+        severity: 'medium',
+        description: 'Alguna puerta o maletero está abierto',
+        causes: ['Puerta mal cerrada', 'Sensor de puerta defectuoso', 'Maletero abierto'],
+        actions: ['Cerrar bien todas las puertas', 'Revisar maletero y capó', 'Si persiste, revisar sensor'],
+        urgency: 'Inmediata (seguridad)',
+        estimatedCost: '0€ - 100€'
+    },
+    {
+        id: 'steering',
+        name: 'Dirección Asistida',
+        icon: '☸️',
+        color: '#EF476F',
+        severity: 'high',
+        description: 'Fallo en dirección asistida',
+        causes: ['Falta de líquido hidráulico', 'Bomba de dirección rota', 'Fallo eléctrico (dirección eléctrica)'],
+        actions: ['Revisar nivel de líquido', 'El volante estará muy duro', 'Conducir con precaución al taller'],
+        urgency: 'Alta - Difícil maniobrar',
+        estimatedCost: '100€ - 1200€'
+    },
+    {
+        id: 'brake-pads',
+        name: 'Desgaste Pastillas',
+        icon: '⭕',
+        color: '#FFD23F',
+        severity: 'medium',
+        description: 'Pastillas de freno desgastadas',
+        causes: ['Pastillas llegando al límite', 'Cable del sensor roto', 'Contacto falso'],
+        actions: ['Planificar cambio de pastillas', 'No es una emergencia inmediata (tienes unos 1000km)', 'Evitar frenadas bruscas'],
+        urgency: 'Media - Planificar taller',
+        estimatedCost: '80€ - 200€'
     }
 ];
 

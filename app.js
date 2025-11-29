@@ -957,22 +957,40 @@ function closeModal(modalId) {
 }
 
 // ============================================
-// MOBILE MENU
+// INITIALIZATION
 // ============================================
 
-function toggleMobileMenu() {
-    const navMenu = document.getElementById('navMenu');
-    const menuToggle = document.getElementById('menuToggle');
-
-    navMenu.classList.toggle('active');
-    menuToggle.classList.toggle('active');
-}
-
-// Close menu when clicking on a link
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if we are on the garage page
+    const isGaragePage = document.getElementById('garageVehicleSelect');
+
+    if (isGaragePage) {
+        loadUserVehicles();
+
+        // Attach Form Listeners manually to avoid scope issues
+        const vehicleForm = document.getElementById('vehicleForm');
+        if (vehicleForm) {
+            vehicleForm.addEventListener('submit', handleAddVehicle);
+        }
+
+        const logForm = document.getElementById('logForm');
+        if (logForm) {
+            logForm.addEventListener('submit', handleAddLog);
+            // Set default date
+            document.getElementById('logDate').valueAsDate = new Date();
+        }
+    }
+
+    setupEventListeners();
+
+    // Mobile Menu Logic
     const navLinks = document.querySelectorAll('.nav-link');
     const navMenu = document.getElementById('navMenu');
     const menuToggle = document.getElementById('menuToggle');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', toggleMobileMenu);
+    }
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -993,6 +1011,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', handleNavigation);
+    });
+
+    // Hero CTA buttons
+    const startDiagnosisBtn = document.getElementById('startDiagnosis');
+    if (startDiagnosisBtn) {
+        startDiagnosisBtn.addEventListener('click', () => {
+            scrollToSection('diagnostico');
+        });
+    }
+
+    const learnMoreBtn = document.getElementById('learnMore');
+    if (learnMoreBtn) {
+        learnMoreBtn.addEventListener('click', () => {
+            scrollToSection('diagnostico');
+        });
+    }
+
+    // Feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const module = e.currentTarget.dataset.module;
+            if (module) {
+                scrollToSection(module);
+            }
+        });
+    });
+
+    // Chat functionality
+    const sendBtn = document.getElementById('sendMessage');
+    const chatInput = document.getElementById('chatInput');
+
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendChatMessage);
+    }
+
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    }
+
+    // Suggestion chips
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+            const text = e.target.textContent;
+            chatInput.value = text;
+            sendChatMessage();
+        });
+    });
+
+    // Garage Tabs
+    document.querySelectorAll('.garage-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.garage-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+            tab.classList.add('active');
+            document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+        });
+    });
+}
 
 // ============================================
 // UTILITY FUNCTIONS

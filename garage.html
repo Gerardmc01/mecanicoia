@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Garage Virtual | Mecánico IA 24/7</title>
+    <meta name="description" content="Gestiona tus vehículos, mantenimientos y averías en tu Garage Virtual.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="garage-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+                    <span class="logo-icon">🔧</span>
+                    <span class="logo-text">Mecánico IA <span class="accent">24/7</span></span>
+                </a>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="index.html#diagnostico" class="nav-link">Diagnóstico</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+                <li><a href="garage.html" class="nav-link active">Mi Garage</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Garage Content -->
+    <section class="module-section garage-module" style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <div class="module-header">
+                <h1 class="module-title">Mi Garage Virtual</h1>
+                <p class="module-subtitle">Tu centro de control para el mantenimiento y estado de tus vehículos</p>
+            </div>
+
+            <!-- Vehicle Selector & Filters -->
+            <div class="garage-filters"
+                style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                <div style="flex: 1; min-width: 250px;">
+                    <select id="garageVehicleSelect" class="select-input" style="width: 100%;">
+                        <option value="">Seleccionar Vehículo...</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('vehicleModal')">➕ Añadir Nuevo Coche</button>
+            </div>
+
+            <!-- Empty State (Shown when no vehicle selected or list empty) -->
+            <div id="garageEmptyState"
+                style="text-align: center; padding: 4rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🚘</div>
+                <h3>Tu Garage está vacío</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Añade tu primer vehículo para ver el panel
+                    de control 3D</p>
+                <button class="btn btn-primary" onclick="openModal('vehicleModal')">Añadir Mi Primer Coche</button>
+            </div>
+
+            <!-- Dashboard (Hidden by default) -->
+            <div class="garage-dashboard" id="garageDashboard" style="display: none;">
+                <!-- Left Column: Visual Car & Stats -->
+                <div class="garage-visuals">
+                    <div class="visual-car-container">
+                        <div class="css-car" id="visualCar">
+                            <div class="car-body">
+                                <div class="car-hood" id="carHood"></div>
+                                <div class="car-lights">
+                                    <div class="headlight left"></div>
+                                    <div class="headlight right"></div>
+                                </div>
+                                <div class="car-status-indicators" id="carStatusIndicators"></div>
+                            </div>
+                            <div class="car-wheels">
+                                <div class="wheel left"></div>
+                                <div class="wheel right"></div>
+                            </div>
+                        </div>
+                        <div
+                            style="position: absolute; bottom: 20px; left: 20px; color: var(--text-muted); font-size: 0.8rem;">
+                            * Interactúa con los botones para ver la animación
+                        </div>
+                    </div>
+
+                    <div class="vehicle-stats"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
+                            <div style="font-weight: 600;" id="statModel">Modelo</div>
+                        </div>
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
+                            <div style="font-weight: 600;" id="statYear">Año</div>
+                        </div>
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
+                            <div style="font-weight: 600;" id="statKm">0 km</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Maintenance & History -->
+                <div class="garage-controls">
+                    <div class="garage-tabs">
+                        <button class="garage-tab active" data-tab="maintenance">Mantenimiento</button>
+                        <button class="garage-tab" data-tab="history">Bitácora / Historial</button>
+                    </div>
+
+                    <!-- Maintenance Tab -->
+                    <div id="tab-maintenance" class="tab-content">
+                        <div class="maintenance-card">
+                            <h3 style="margin-bottom: 1rem;">Estado del Mantenimiento</h3>
+                            <div id="maintenanceList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="maintenance-card" style="margin-top: 1rem;">
+                            <h3 style="margin-bottom: 1rem;">Simulación Visual</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('oil')">🛢️ Ver
+                                    Aceite</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('lights')">💡 Probar
+                                    Luces</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('tires')">🛞 Ver
+                                    Ruedas</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('battery')">🔋 Test
+                                    Batería</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="tab-history" class="tab-content" style="display: none;">
+                        <div class="maintenance-card">
+                            <h3 style="margin-bottom: 1rem;">Bitácora del Vehículo</h3>
+                            <div id="historyList" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Añadir Vehículo -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('vehicleModal')">&times;</span>
+            <h2>Añadir Nuevo Vehículo</h2>
+            <form id="vehicleForm">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="vehicleBrand" class="form-input" placeholder="Ej: Ford, Seat, BMW..."
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="vehicleModel" class="form-input" placeholder="Ej: Fiesta, Ibiza, Serie 3..."
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Año</label>
+                    <input type="number" id="vehicleYear" class="form-input" placeholder="Ej: 2018" required>
+                </div>
+                <div class="form-group">
+                    <label>Kilometraje Actual</label>
+                    <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
+                    Vehículo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Registro (Bitácora) -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('logModal')">&times;</span>
+            <h2>Añadir al Historial</h2>
+            <form id="logForm">
+                <div class="form-group">
+                    <label>Tipo de Registro</label>
+                    <select id="logType" class="select-input" required>
+                        <option value="mantenimiento">🛠️ Mantenimiento (Aceite, Filtros...)</option>
+                        <option value="averia">⚠️ Avería / Reparación</option>
+                        <option value="modificacion">✨ Modificación / Extra (Alerón, Llantas...)</option>
+                        <option value="taller">👨‍🔧 Visita al Taller</option>
+                        <option value="otro">📝 Nota General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="logDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="logDescription" class="form-input" rows="3"
+                        placeholder="Ej: Cambio de aceite y filtro, puse un alerón nuevo, ruido en frenos..."
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Coste (Opcional)</label>
+                    <input type="number" id="logCost" class="form-input" placeholder="Ej: 150">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
+                    Registro</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

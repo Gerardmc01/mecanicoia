@@ -319,126 +319,6 @@
 
 
 
-    <!-- Mi Garage Avanzado -->
-    <section id="mi-garage" class="module-section garage-module">
-        <div class="container">
-            <div class="module-header">
-                <h2 class="module-title">Mi Garage Inteligente</h2>
-                <p class="module-subtitle">Gestión centralizada de tus vehículos, mantenimientos y diagnósticos</p>
-            </div>
-
-            <!-- Vehicle Selector & Filters -->
-            <div class="garage-filters" style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                <select id="garageVehicleSelect" class="select-input" style="flex: 1; min-width: 200px;">
-                    <option value="">Seleccionar Vehículo...</option>
-                </select>
-                <button class="btn btn-secondary" id="addVehicleBtn">➕ Añadir Coche</button>
-            </div>
-
-            <div class="garage-dashboard" id="garageDashboard" style="display: none;">
-                <!-- Left Column: Visual Car & Stats -->
-                <div class="garage-visuals">
-                    <div class="visual-car-container">
-                        <div class="css-car" id="visualCar">
-                            <div class="car-body">
-                                <div class="car-hood" id="carHood"></div>
-                                <div class="car-lights">
-                                    <div class="headlight left"></div>
-                                    <div class="headlight right"></div>
-                                </div>
-                                <div class="car-status-indicators" id="carStatusIndicators">
-                                    <div class="status-badge" id="oilBadge">🛢️ Aceite OK</div>
-                                    <div class="status-badge" id="brakesBadge">🛑 Frenos OK</div>
-                                    <div class="status-badge" id="batteryBadge">🔋 Batería OK</div>
-                                </div>
-                            </div>
-                            <div class="car-wheels">
-                                <div class="wheel left"></div>
-                                <div class="wheel right"></div>
-                            </div>
-                        </div>
-                        <div
-                            style="position: absolute; bottom: 20px; left: 20px; color: var(--text-muted); font-size: 0.8rem;">
-                            * Interactúa con los botones de mantenimiento para ver la animación
-                        </div>
-                    </div>
-
-                    <div class="vehicle-stats"
-                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
-                            <div style="font-weight: 600;" id="statModel">Modelo</div>
-                        </div>
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
-                            <div style="font-weight: 600;" id="statYear">Año</div>
-                        </div>
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
-                            <div style="font-weight: 600;" id="statKm">0 km</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Maintenance & History -->
-                <div class="garage-controls">
-                    <div class="garage-tabs">
-                        <button class="garage-tab active" data-tab="maintenance">Mantenimiento</button>
-                        <button class="garage-tab" data-tab="history">Historial</button>
-                    </div>
-
-                    <!-- Maintenance Tab -->
-                    <div id="tab-maintenance" class="tab-content">
-                        <div class="maintenance-card">
-                            <h3 style="margin-bottom: 1rem;">Próximos Mantenimientos</h3>
-                            <div id="maintenanceList">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <div class="maintenance-card" style="margin-top: 1rem;">
-                            <h3 style="margin-bottom: 1rem;">Acciones Rápidas</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('oil')">Cambiar
-                                    Aceite</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('lights')">Revisar
-                                    Luces</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('tires')">Revisar
-                                    Ruedas</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('battery')">Test
-                                    Batería</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- History Tab -->
-                    <div id="tab-history" class="tab-content" style="display: none;">
-                        <div class="maintenance-card">
-                            <h3 style="margin-bottom: 1rem;">Historial de Averías</h3>
-                            <div id="historyList" style="max-height: 300px; overflow-y: auto;">
-                                <p style="color: var(--text-muted); text-align: center;">No hay historial registrado</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Empty State -->
-            <div id="garageEmptyState"
-                style="text-align: center; padding: 4rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🚘</div>
-                <h3>Tu Garage está vacío</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Añade tu primer vehículo para gestionar
-                    mantenimientos y averías</p>
-                <button class="btn btn-primary" onclick="document.getElementById('addVehicleBtn').click()">Añadir Mi
-                    Primer Coche</button>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -458,7 +338,7 @@
                     <ul>
                         <li><a href="#diagnostico">Diagnóstico Inteligente</a></li>
                         <li><a href="#luces">Luces del Tablero</a></li>
-                        <li><a href="#mi-garage">Mi Garage</a></li>
+                        <li><a href="garage.html">Mi Garage</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -499,101 +379,61 @@
         </div>
     </div>
 
-    <div class="modal" id="vehicleModal">
-        <div class="modal-overlay"></div>
+    <label>Modelo</label>
+    <input type="text" id="vehicleModel" class="form-input" placeholder="Ej: Fiesta, Ibiza, Serie 3..." required>
+    </div>
+    <div class="form-group">
+        <label>Año</label>
+        <input type="number" id="vehicleYear" class="form-input" placeholder="Ej: 2018" required>
+    </div>
+    <div class="form-group">
+        <label>Kilometraje Actual</label>
+        <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000" required>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar Vehículo</button>
+    </form>
+    </div>
+    </div>
+
+    <!-- Modal Añadir Registro (Bitácora) -->
+    <div id="logModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close">&times;</button>
-            <div class="modal-body">
-                <h2>Añadir Vehículo</h2>
-                <form id="vehicleForm" class="vehicle-form">
-                    <div class="form-group">
-                        <label>Marca</label>
-                        <input type="text" id="vehicleBrand" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Modelo</label>
-                        <input type="text" id="vehicleModel" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Año</label>
-                        <input type="number" id="vehicleYear" min="1980" max="2025" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Kilometraje Actual</label>
-                        <input type="number" id="vehicleMileage" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Guardar Vehículo</button>
-                    <!-- Modal Añadir Vehículo -->
-                    <div id="vehicleModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close-modal" onclick="closeModal('vehicleModal')">&times;</span>
-                            <h2>Añadir Nuevo Vehículo</h2>
-                            <form id="vehicleForm" onsubmit="handleAddVehicle(event)">
-                                <div class="form-group">
-                                    <label>Marca</label>
-                                    <input type="text" id="vehicleBrand" class="form-input"
-                                        placeholder="Ej: Ford, Seat, BMW..." required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Modelo</label>
-                                    <input type="text" id="vehicleModel" class="form-input"
-                                        placeholder="Ej: Fiesta, Ibiza, Serie 3..." required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Año</label>
-                                    <input type="number" id="vehicleYear" class="form-input" placeholder="Ej: 2018"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Kilometraje Actual</label>
-                                    <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000"
-                                        required>
-                                </div>
-                                <button type="submit" class="btn btn-primary"
-                                    style="width: 100%; margin-top: 1rem;">Guardar Vehículo</button>
-                            </form>
-                        </div>
-                    </div>
+            <span class="close-modal" onclick="closeModal('logModal')">&times;</span>
+            <h2>Añadir al Historial</h2>
+            <form id="logForm" onsubmit="handleAddLog(event)">
+                <div class="form-group">
+                    <label>Tipo de Registro</label>
+                    <select id="logType" class="select-input" required>
+                        <option value="mantenimiento">🛠️ Mantenimiento (Aceite, Filtros...)</option>
+                        <option value="averia">⚠️ Avería / Reparación</option>
+                        <option value="modificacion">✨ Modificación / Extra (Alerón, Llantas...)
+                        </option>
+                        <option value="taller">👨‍🔧 Visita al Taller</option>
+                        <option value="otro">📝 Nota General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="logDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="logDescription" class="form-input" rows="3"
+                        placeholder="Ej: Cambio de aceite y filtro, puse un alerón nuevo, ruido en frenos..."
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Coste (Opcional)</label>
+                    <input type="number" id="logCost" class="form-input" placeholder="Ej: 150">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
+                    Registro</button>
+            </form>
+        </div>
+    </div>
 
-                    <!-- Modal Añadir Registro (Bitácora) -->
-                    <div id="logModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close-modal" onclick="closeModal('logModal')">&times;</span>
-                            <h2>Añadir al Historial</h2>
-                            <form id="logForm" onsubmit="handleAddLog(event)">
-                                <div class="form-group">
-                                    <label>Tipo de Registro</label>
-                                    <select id="logType" class="select-input" required>
-                                        <option value="mantenimiento">🛠️ Mantenimiento (Aceite, Filtros...)</option>
-                                        <option value="averia">⚠️ Avería / Reparación</option>
-                                        <option value="modificacion">✨ Modificación / Extra (Alerón, Llantas...)
-                                        </option>
-                                        <option value="taller">👨‍🔧 Visita al Taller</option>
-                                        <option value="otro">📝 Nota General</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Fecha</label>
-                                    <input type="date" id="logDate" class="form-input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Descripción</label>
-                                    <textarea id="logDescription" class="form-input" rows="3"
-                                        placeholder="Ej: Cambio de aceite y filtro, puse un alerón nuevo, ruido en frenos..."
-                                        required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Coste (Opcional)</label>
-                                    <input type="number" id="logCost" class="form-input" placeholder="Ej: 150">
-                                </div>
-                                <button type="submit" class="btn btn-primary"
-                                    style="width: 100%; margin-top: 1rem;">Guardar Registro</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <script src="data.js"></script>
-                    <script src="app.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
