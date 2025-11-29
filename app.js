@@ -1,0 +1,790 @@
+// ============================================
+// MECÁNICO IA 24/7 - Main Application Logic
+// ============================================
+
+// State Management
+const state = {
+    currentModule: 'inicio',
+    chatHistory: [],
+    userVehicles: JSON.parse(localStorage.getItem('userVehicles')) || [],
+    favorites: JSON.parse(localStorage.getItem('favorites')) || []
+};
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+    setupEventListeners();
+    loadDashboardLights();
+    loadUserVehicles();
+    setupScrollEffects();
+});
+
+function initializeApp() {
+    console.log('🔧 Mecánico IA 24/7 initialized');
+
+    // Add initial assistant message
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages && chatMessages.children.length === 1) {
+        // Already has initial message from HTML
+    }
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+function setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', handleNavigation);
+    });
+
+    // Hero CTA buttons
+    const startDiagnosisBtn = document.getElementById('startDiagnosis');
+    if (startDiagnosisBtn) {
+        startDiagnosisBtn.addEventListener('click', () => {
+            scrollToSection('diagnostico');
+        });
+    }
+
+    const learnMoreBtn = document.getElementById('learnMore');
+    if (learnMoreBtn) {
+        learnMoreBtn.addEventListener('click', () => {
+            scrollToSection('diagnostico');
+        });
+    }
+
+    // Feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const module = e.currentTarget.dataset.module;
+            if (module) {
+                scrollToSection(module);
+            }
+        });
+    });
+
+    // Chat functionality
+    const sendBtn = document.getElementById('sendMessage');
+    const chatInput = document.getElementById('chatInput');
+
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendChatMessage);
+    }
+
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    }
+
+    // Suggestion chips
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+            const text = e.target.textContent;
+            chatInput.value = text;
+            sendChatMessage();
+        });
+    });
+
+    // Lights search
+    const lightsSearch = document.getElementById('lightsSearch');
+    if (lightsSearch) {
+        lightsSearch.addEventListener('input', (e) => {
+            filterLights(e.target.value);
+        });
+    }
+
+
+    // Vehicle management
+    const addVehicleBtn = document.getElementById('addVehicle');
+    if (addVehicleBtn) {
+        addVehicleBtn.addEventListener('click', () => {
+            openModal('vehicleModal');
+        });
+    }
+
+    const vehicleForm = document.getElementById('vehicleForm');
+    if (vehicleForm) {
+        vehicleForm.addEventListener('submit', handleAddVehicle);
+    }
+
+    // Modal close buttons
+    document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
+        element.addEventListener('click', (e) => {
+            const modal = e.target.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Menu toggle for mobile
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', toggleMobileMenu);
+    }
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+
+function handleNavigation(e) {
+    e.preventDefault();
+    const href = e.target.getAttribute('href');
+    if (href && href.startsWith('#')) {
+        const sectionId = href.substring(1);
+        scrollToSection(sectionId);
+
+        // Update active state
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        e.target.classList.add('active');
+    }
+}
+
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        const navHeight = document.querySelector('.navbar').offsetHeight;
+        const sectionTop = section.offsetTop - navHeight;
+        window.scrollTo({
+            top: sectionTop,
+            behavior: 'smooth'
+        });
+    }
+}
+
+function setupScrollEffects() {
+    let lastScroll = 0;
+    const navbar = document.querySelector('.navbar');
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        // Add scrolled class for navbar
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+
+        lastScroll = currentScroll;
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-card, .info-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// ============================================
+// CHAT / DIAGNOSTIC MODULE
+// ============================================
+
+async function sendChatMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const message = chatInput.value.trim();
+
+    if (!message) return;
+
+    // Add user message
+    addChatMessage(message, 'user');
+    chatInput.value = '';
+    chatInput.style.height = 'auto';
+
+    // Hide suggestions after first message
+    const suggestions = document.getElementById('chatSuggestions');
+    if (suggestions && state.chatHistory.length === 0) {
+        suggestions.style.display = 'none';
+    }
+
+    // Save to history
+    state.chatHistory.push({ role: 'user', content: message });
+
+    // Show typing indicator
+    const typingIndicator = addTypingIndicator();
+
+    // Simulate AI response (in production, this would call your AI API)
+    setTimeout(() => {
+        typingIndicator.remove();
+        const response = generateDiagnosticResponse(message);
+        addChatMessage(response, 'assistant');
+        state.chatHistory.push({ role: 'assistant', content: response });
+    }, 1500);
+}
+
+function addChatMessage(text, role) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${role}-message`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.textContent = role === 'assistant' ? '🔧' : '👤';
+
+    const content = document.createElement('div');
+    content.className = 'message-content';
+
+    const messageText = document.createElement('div');
+    messageText.className = 'message-text';
+    messageText.innerHTML = formatMessage(text);
+
+    content.appendChild(messageText);
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(content);
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addTypingIndicator() {
+    const chatMessages = document.getElementById('chatMessages');
+    const indicator = document.createElement('div');
+    indicator.className = 'message assistant-message typing-indicator';
+    indicator.innerHTML = `
+        <div class="message-avatar">🔧</div>
+        <div class="message-content">
+            <div class="message-text">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    `;
+    chatMessages.appendChild(indicator);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return indicator;
+}
+
+function formatMessage(text) {
+    // Convert markdown-style formatting
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+}
+
+function generateDiagnosticResponse(userMessage) {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Check for noise-related issues
+    if (lowerMessage.includes('ruido') || lowerMessage.includes('sonido') || lowerMessage.includes('chirrido')) {
+        if (lowerMessage.includes('freno') || lowerMessage.includes('frenar')) {
+            return `🔍 **Diagnóstico: Ruido al frenar**
+
+**Causas más probables:**
+1. **Pastillas de freno gastadas** (70% probabilidad) - Las pastillas tienen un indicador de desgaste que hace ruido cuando están al límite
+2. **Discos de freno cristalizados** (20%) - Por sobrecalentamiento o uso intenso
+3. **Piedras o suciedad** (10%) - Entre la pastilla y el disco
+
+**Nivel de gravedad:** ⚠️ MEDIO-ALTO
+Si es un chirrido metálico constante, las pastillas están muy gastadas.
+
+**Qué hacer:**
+✅ Revisar grosor de pastillas (mínimo 3mm)
+✅ Inspeccionar estado de discos
+✅ No demorar la reparación - puede dañar los discos
+
+**Coste estimado:** 150€ - 400€ (pastillas + mano de obra)
+Si hay que cambiar discos: 300€ - 600€
+
+**Consejo:** Si el ruido solo ocurre en las primeras frenadas del día y luego desaparece, puede ser condensación normal. Si es constante, revisar urgente.
+
+¿Quieres que te explique cómo revisar tú mismo el grosor de las pastillas?`;
+        }
+
+        if (lowerMessage.includes('motor')) {
+            return `🔍 **Diagnóstico: Ruido en el motor**
+
+**Necesito más información:**
+- ¿Es un ruido metálico, silbido, golpeteo o traqueteo?
+- ¿Ocurre en ralentí, al acelerar o siempre?
+- ¿Desde cuándo lo notas?
+
+**Posibles causas según tipo de ruido:**
+
+**Silbido agudo:** 
+- Correa auxiliar desgastada (común, 80€-200€)
+- Fuga en turbo (si lo tiene)
+
+**Golpeteo metálico:**
+- ⚠️ Nivel de aceite bajo (REVISAR YA)
+- Taqués hidráulicos
+- Bielas (grave, 2000€+)
+
+**Traqueteo al acelerar:**
+- Picado de bielas (usar combustible mejor)
+- Sensor de detonación
+
+**Acción inmediata:**
+1. Revisar nivel de aceite
+2. Escuchar si el ruido cambia con las revoluciones
+3. Grabar un audio si es posible
+
+¿Puedes darme más detalles sobre el tipo de ruido?`;
+        }
+    }
+
+    // Check for warning lights
+    if (lowerMessage.includes('luz') || lowerMessage.includes('testigo') || lowerMessage.includes('tablero')) {
+        if (lowerMessage.includes('motor') || lowerMessage.includes('check')) {
+            return `🔍 **Luz Check Engine encendida**
+
+**¿Qué significa?**
+El sistema de gestión del motor ha detectado un problema. Puede ser desde algo simple hasta grave.
+
+**Causas más comunes:**
+1. **Tapón de gasolina mal cerrado** (5% casos) - Revísalo primero
+2. **Sensor de oxígeno** (30%) - 150€-300€
+3. **Catalizador** (15%) - 400€-1200€
+4. **Bujías** (20%) - 80€-200€
+5. **Sensor MAF** (10%) - 100€-250€
+
+**¿Qué hacer?**
+✅ Comprar lector OBD2 (15€-30€ en Amazon) o ir a taller para escanear códigos
+✅ Revisar nivel de aceite
+✅ Verificar tapón de combustible
+✅ Anotar si el coche pierde potencia, consume más o funciona raro
+
+**Urgencia:** 
+- Si la luz parpadea: ⚠️ DETENER - fallo grave
+- Si está fija: Revisar en 1-2 días
+
+**Consejo pro:** Muchos talleres escanean códigos gratis. También puedes comprar un lector OBD2 bluetooth por 20€ y usar app gratuita en el móvil.
+
+¿Notas algún otro síntoma (pérdida potencia, consumo alto, ralentí irregular)?`;
+        }
+    }
+
+    // Check for power loss
+    if (lowerMessage.includes('potencia') || lowerMessage.includes('fuerza') || lowerMessage.includes('acelera')) {
+        return `🔍 **Diagnóstico: Pérdida de potencia**
+
+**Causas más probables:**
+
+**Si es gradual (empeora con el tiempo):**
+1. **Filtro de aire sucio** (40%) - Fácil, 20€-40€
+2. **Inyectores obstruidos** (30%) - Limpieza 100€-200€
+3. **Turbo con problemas** (si lo tiene) - 500€-2000€
+
+**Si es repentino:**
+1. **Sensor MAF defectuoso** - 100€-250€
+2. **Válvula EGR bloqueada** - 150€-400€
+3. **Filtro de combustible** - 30€-80€
+
+**Si solo en subidas:**
+- Embrague patinando (manual) - 400€-900€
+- Convertidor de par (automático) - 800€-2000€
+
+**Prueba rápida:**
+1. Revisar filtro de aire (abre la caja y míralo)
+2. Usar limpiador de inyectores (aditivo) - 10€
+3. Escanear códigos de error
+
+**Coste estimado:** 20€ - 2000€ según causa
+
+¿La pérdida es gradual o repentina? ¿Solo en subidas o siempre?`;
+    }
+
+    // Check for smoke
+    if (lowerMessage.includes('humo')) {
+        let color = 'no especificado';
+        if (lowerMessage.includes('blanco')) color = 'blanco';
+        if (lowerMessage.includes('azul')) color = 'azul';
+        if (lowerMessage.includes('negro')) color = 'negro';
+
+        if (color === 'blanco') {
+            return `🔍 **Humo blanco del escape**
+
+**Causas:**
+
+**Humo blanco al arrancar en frío (desaparece):**
+✅ **NORMAL** - Es condensación de agua
+
+**Humo blanco constante:**
+⚠️ **Refrigerante entrando en motor**
+- Junta de culata dañada (800€-1500€)
+- Culata agrietada (1500€-3000€)
+- Bloque motor fisurado (grave)
+
+**Síntomas adicionales si es grave:**
+- Nivel de refrigerante baja constantemente
+- Aceite con aspecto lechoso
+- Motor se calienta más de lo normal
+- Pérdida de potencia
+
+**Qué hacer:**
+1. Revisar nivel de refrigerante
+2. Revisar aceite (si está lechoso, GRAVE)
+3. Oler el humo (si huele dulce, es refrigerante)
+4. No seguir conduciendo si es constante
+
+**Urgencia:** Alta si es constante
+
+¿El humo solo sale al arrancar o es constante?`;
+        }
+
+        if (color === 'azul') {
+            return `🔍 **Humo azul del escape**
+
+**Causa:** Motor quemando aceite ⚠️
+
+**Origen del problema:**
+1. **Segmentos de pistón gastados** (común en motores con km)
+2. **Retenes de válvula** (más barato de reparar)
+3. **Turbo con fuga de aceite** (si lo tiene)
+
+**Gravedad:** ALTA - El motor está desgastado
+
+**Síntomas adicionales:**
+- Consumo de aceite elevado
+- Pérdida de potencia
+- Más humo al acelerar fuerte
+
+**Coste reparación:**
+- Retenes de válvula: 400€-800€
+- Segmentos (rectificado motor): 1500€-3000€
+- Turbo: 500€-1500€
+
+**Qué hacer ahora:**
+1. Revisar nivel de aceite semanalmente
+2. No dejar que baje del mínimo
+3. Valorar si merece la pena reparar según valor del coche
+4. Considerar vender "tal cual" si el coche es viejo
+
+**Consejo:** Si el coche tiene más de 200.000 km y vale menos de 3000€, puede no merecer la pena repararlo.
+
+¿Cuánto aceite consume aproximadamente?`;
+        }
+
+        return `🔍 **Humo del escape**
+
+Para darte un diagnóstico preciso, necesito saber:
+- **¿De qué color es el humo?** (blanco, azul, negro)
+- ¿Sale solo al arrancar o constantemente?
+- ¿Cuándo lo notas más?
+
+**Guía rápida:**
+- **Blanco:** Agua/refrigerante
+- **Azul:** Aceite quemándose
+- **Negro:** Exceso de combustible
+
+¿Puedes especificar el color?`;
+    }
+
+    // Default response
+    return `🔧 **Entiendo tu consulta**
+
+He registrado tu problema: "${userMessage}"
+
+Para darte un diagnóstico más preciso, necesito algunos detalles:
+
+**Información útil:**
+- Marca y modelo del coche
+- Año aproximado
+- Kilometraje
+- ¿Cuándo ocurre el problema? (arranque, marcha, frenado...)
+- ¿Es constante o intermitente?
+- ¿Hay ruidos, olores o luces encendidas?
+
+**Mientras tanto, puedes:**
+- Revisar el nivel de aceite y refrigerante
+- Verificar presión de neumáticos
+- Comprobar si hay luces de aviso en el tablero
+- Escanear códigos de error si tienes lector OBD2
+
+También puedes usar las **sugerencias rápidas** arriba o consultar la sección de **Luces del Tablero** si tienes algún testigo encendido.
+
+¿Puedes darme más detalles sobre el problema?`;
+}
+
+// ============================================
+// DASHBOARD LIGHTS MODULE
+// ============================================
+
+function loadDashboardLights() {
+    const lightsGrid = document.getElementById('lightsGrid');
+    if (!lightsGrid) return;
+
+    lightsGrid.innerHTML = '';
+
+    dashboardLights.forEach(light => {
+        const lightCard = createLightCard(light);
+        lightsGrid.appendChild(lightCard);
+    });
+}
+
+function createLightCard(light) {
+    const card = document.createElement('div');
+    card.className = 'light-card';
+    card.innerHTML = `
+        <div class="light-icon" style="filter: drop-shadow(0 0 10px ${light.color})">${light.icon}</div>
+        <div class="light-name">${light.name}</div>
+        <span class="light-severity severity-${light.severity}">${getSeverityText(light.severity)}</span>
+        <p class="light-description">${light.description}</p>
+    `;
+
+    card.addEventListener('click', () => {
+        showLightDetails(light);
+    });
+
+    return card;
+}
+
+function getSeverityText(severity) {
+    const texts = {
+        low: 'Baja',
+        medium: 'Media',
+        high: 'Alta'
+    };
+    return texts[severity] || severity;
+}
+
+function showLightDetails(light) {
+    const modal = document.getElementById('lightModal');
+    const modalBody = document.getElementById('lightModalBody');
+
+    modalBody.innerHTML = `
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 5rem; filter: drop-shadow(0 0 20px ${light.color})">${light.icon}</div>
+            <h2 style="margin: 1rem 0;">${light.name}</h2>
+            <span class="light-severity severity-${light.severity}">${getSeverityText(light.severity)}</span>
+        </div>
+
+        <div style="background: var(--bg-glass); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 0.5rem;">📋 Descripción</h3>
+            <p style="color: var(--text-secondary);">${light.description}</p>
+        </div>
+
+        <div style="background: var(--bg-glass); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem;">🔍 Causas Probables</h3>
+            <ul style="list-style: none; padding: 0;">
+                ${light.causes.map(cause => `
+                    <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative; color: var(--text-secondary);">
+                        <span style="position: absolute; left: 0; color: var(--primary);">→</span>
+                        ${cause}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+
+        <div style="background: var(--bg-glass); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem;">✅ Qué Hacer</h3>
+            <ol style="padding-left: 1.5rem; color: var(--text-secondary);">
+                ${light.actions.map(action => `<li style="padding: 0.5rem 0;">${action}</li>`).join('')}
+            </ol>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+                <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Urgencia</div>
+                <div style="font-weight: 600;">${light.urgency}</div>
+            </div>
+            <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
+                <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Coste Estimado</div>
+                <div style="font-weight: 600; color: var(--primary);">${light.estimatedCost}</div>
+            </div>
+        </div>
+    `;
+
+    openModal('lightModal');
+}
+
+function filterLights(query) {
+    const lightsGrid = document.getElementById('lightsGrid');
+    const cards = lightsGrid.querySelectorAll('.light-card');
+    const searchTerm = query.toLowerCase();
+
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+
+// ============================================
+// VEHICLE MANAGEMENT
+// ============================================
+
+function loadUserVehicles() {
+    const vehiclesList = document.getElementById('vehiclesList');
+    if (!vehiclesList) return;
+
+    vehiclesList.innerHTML = '';
+
+    if (state.userVehicles.length === 0) {
+        vehiclesList.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
+                <p>No tienes vehículos registrados</p>
+            </div>
+        `;
+        return;
+    }
+
+    state.userVehicles.forEach((vehicle, index) => {
+        const card = createVehicleCard(vehicle, index);
+        vehiclesList.appendChild(card);
+    });
+}
+
+function createVehicleCard(vehicle, index) {
+    const card = document.createElement('div');
+    card.className = 'feature-card';
+    card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div class="feature-icon">🚗</div>
+            <button onclick="removeVehicle(${index})" style="background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer;">
+                Eliminar
+            </button>
+        </div>
+        <h3 class="feature-title">${vehicle.brand} ${vehicle.model}</h3>
+        <div style="color: var(--text-secondary); margin-bottom: 1rem;">
+            <div>📅 Año: ${vehicle.year}</div>
+            <div>📊 Kilometraje: ${vehicle.mileage.toLocaleString()} km</div>
+        </div>
+        <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Próximo mantenimiento:</div>
+            <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                ${getNextMaintenance(vehicle.mileage)}
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function getNextMaintenance(mileage) {
+    const nextOil = Math.ceil(mileage / 15000) * 15000;
+    const nextFilter = Math.ceil(mileage / 30000) * 30000;
+
+    return `
+        🔧 Aceite: ${(nextOil - mileage).toLocaleString()} km<br>
+        🔧 Filtros: ${(nextFilter - mileage).toLocaleString()} km
+    `;
+}
+
+function handleAddVehicle(e) {
+    e.preventDefault();
+
+    const vehicle = {
+        brand: document.getElementById('vehicleBrand').value,
+        model: document.getElementById('vehicleModel').value,
+        year: parseInt(document.getElementById('vehicleYear').value),
+        mileage: parseInt(document.getElementById('vehicleMileage').value),
+        addedDate: new Date().toISOString()
+    };
+
+    state.userVehicles.push(vehicle);
+    localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+    closeModal('vehicleModal');
+    loadUserVehicles();
+
+    // Reset form
+    document.getElementById('vehicleForm').reset();
+}
+
+function removeVehicle(index) {
+    if (confirm('¿Seguro que quieres eliminar este vehículo?')) {
+        state.userVehicles.splice(index, 1);
+        localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+        loadUserVehicles();
+    }
+}
+
+// ============================================
+// MODAL MANAGEMENT
+// ============================================
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// ============================================
+// MOBILE MENU
+// ============================================
+
+function toggleMobileMenu() {
+    const navMenu = document.querySelector('.nav-menu');
+    const menuToggle = document.getElementById('menuToggle');
+
+    navMenu.classList.toggle('active');
+    menuToggle.classList.toggle('active');
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ============================================
+// EXPORT FOR TESTING
+// ============================================
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        generateDiagnosticResponse,
+        formatMessage,
+        state
+    };
+}

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mecánico IA 24/7 - Tu Asistente Automotriz Inteligente</title>
+    <meta name="description"
+        content="Diagnóstico inteligente de averías, análisis de ruidos, explicación de luces del tablero y consejos de mantenimiento con IA. Tu mecánico virtual disponible 24/7.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">🔧</span>
+                <span class="logo-text">Mecánico IA <span class="accent">24/7</span></span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                <li><a href="#diagnostico" class="nav-link">Diagnóstico</a></li>
+                <li><a href="#luces" class="nav-link">Luces del Tablero</a></li>
+                <li><a href="#mi-garage" class="nav-link">Mi Garage</a></li>
+            </ul>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-background"></div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Disponible 24/7 • Respuestas en segundos</span>
+                </div>
+                <h1 class="hero-title">
+                    Tu Mecánico Personal<br>
+                    <span class="gradient-text">Impulsado por IA</span>
+                </h1>
+                <p class="hero-description">
+                    Diagnóstico inteligente de averías, análisis de ruidos, explicación de luces del tablero
+                    y consejos personalizados de mantenimiento. Todo en un solo lugar.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" id="startDiagnosis">
+                        <span>Iniciar Diagnóstico</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button class="btn btn-secondary" id="learnMore">
+                        Ver Cómo Funciona
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Diagnósticos Realizados</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Precisión</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Disponibilidad</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="mechanic-avatar">
+                    <div class="avatar-glow"></div>
+                    <div class="avatar-image">🤖</div>
+                    <div class="avatar-status">
+                        <span class="status-dot"></span>
+                        <span>En línea</span>
+                    </div>
+                </div>
+                <div class="floating-card card-1">
+                    <div class="card-icon">⚠️</div>
+                    <div class="card-text">
+                        <div class="card-title">Motor hace ruido</div>
+                        <div class="card-subtitle">Diagnosticando...</div>
+                    </div>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="card-icon">✅</div>
+                    <div class="card-text">
+                        <div class="card-title">Diagnóstico completo</div>
+                        <div class="card-subtitle">Correa de distribución</div>
+                    </div>
+                </div>
+                <div class="floating-card card-3">
+                    <div class="card-icon">💰</div>
+                    <div class="card-text">
+                        <div class="card-title">Coste estimado</div>
+                        <div class="card-subtitle">350€ - 600€</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">¿Qué Puedo Hacer Por Ti?</h2>
+                <p class="section-description">Herramientas inteligentes para todos tus problemas automotrices</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-module="diagnostico">
+                    <div class="feature-icon">🔍</div>
+                    <h3 class="feature-title">Diagnóstico Inteligente</h3>
+                    <p class="feature-description">Describe el problema y obtén un diagnóstico detallado con causas
+                        probables, gravedad y soluciones.</p>
+                    <button class="feature-btn">Diagnosticar Ahora</button>
+                </div>
+                <div class="feature-card" data-module="luces">
+                    <div class="feature-icon">💡</div>
+                    <h3 class="feature-title">Luces del Tablero</h3>
+                    <p class="feature-description">¿Se encendió una luz? Te explico qué significa, qué tan grave es y
+                        qué hacer inmediatamente.</p>
+                    <button class="feature-btn">Consultar Luz</button>
+                </div>
+                <div class="feature-card" data-module="sonidos">
+                    <div class="feature-icon">🔊</div>
+                    <h3 class="feature-title">Analizador de Sonidos</h3>
+                    <p class="feature-description">Describe el ruido que hace tu coche y te diré qué puede estar
+                        fallando.</p>
+                    <button class="feature-btn">Analizar Ruido</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diagnostic Module -->
+    <section id="diagnostico" class="module-section diagnostic-module">
+        <div class="container">
+            <div class="module-header">
+                <h2 class="module-title">Diagnóstico Inteligente</h2>
+                <p class="module-subtitle">Cuéntame qué le pasa a tu coche y te ayudaré a identificar el problema</p>
+            </div>
+            <div class="diagnostic-container">
+                <div class="chat-interface">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant-message">
+                            <div class="message-avatar">🔧</div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    ¡Hola! Soy tu Mecánico IA. Cuéntame qué problema tiene tu coche: ruidos extraños,
+                                    pérdida de potencia, vibraciones, humo, olores... Lo que sea. Cuanto más detalles me
+                                    des,
+                                    mejor podré ayudarte.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-suggestions" id="chatSuggestions">
+                            <button class="suggestion-chip">Mi coche hace un ruido metálico al frenar</button>
+                            <button class="suggestion-chip">El motor pierde potencia en subidas</button>
+                            <button class="suggestion-chip">Sale humo blanco del escape</button>
+                            <button class="suggestion-chip">Vibra el volante a alta velocidad</button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea id="chatInput" class="chat-input"
+                                placeholder="Describe el problema de tu coche..." rows="1"></textarea>
+                            <button class="send-btn" id="sendMessage">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 8L11 13" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="diagnostic-info">
+                    <div class="info-card">
+                        <h3>💡 Consejos para un mejor diagnóstico</h3>
+                        <ul>
+                            <li>Describe cuándo ocurre el problema (arranque, marcha, frenado...)</li>
+                            <li>Menciona si hay ruidos, olores o humos</li>
+                            <li>Indica el modelo y año de tu coche si es posible</li>
+                            <li>Explica si el problema es constante o intermitente</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h3>🎯 ¿Qué obtendrás?</h3>
+                        <ul>
+                            <li><strong>Causas probables</strong> ordenadas por frecuencia</li>
+                            <li><strong>Nivel de gravedad</strong> del problema</li>
+                            <li><strong>Rango de costes</strong> estimados de reparación</li>
+                            <li><strong>Consejos preventivos</strong> para evitar daños mayores</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Lights Module -->
+    <section id="luces" class="module-section lights-module">
+        <div class="container">
+            <div class="module-header">
+                <h2 class="module-title">Luces del Tablero</h2>
+                <p class="module-subtitle">Identifica qué significa cada luz y qué hacer al respecto</p>
+            </div>
+            <div class="lights-search">
+                <input type="text" id="lightsSearch" class="search-input"
+                    placeholder="Buscar por nombre o descripción (ej: motor, frenos, aceite...)">
+            </div>
+            <div class="lights-grid" id="lightsGrid">
+                <!-- Lights will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- My Garage -->
+    <section id="mi-garage" class="module-section garage-module">
+        <div class="container">
+            <div class="module-header">
+                <h2 class="module-title">Mi Garage</h2>
+                <p class="module-subtitle">Guarda tus vehículos y recibe alertas de mantenimiento preventivo</p>
+            </div>
+            <div class="garage-container">
+                <div class="add-vehicle-card">
+                    <div class="add-icon">➕</div>
+                    <h3>Añadir Vehículo</h3>
+                    <p>Registra tu coche para recibir recordatorios de mantenimiento</p>
+                    <button class="btn btn-primary" id="addVehicle">Añadir Coche</button>
+                </div>
+                <div class="vehicles-list" id="vehiclesList">
+                    <!-- Vehicles will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🔧</span>
+                        <span class="logo-text">Mecánico IA 24/7</span>
+                    </div>
+                    <p class="footer-description">
+                        Tu asistente automotriz inteligente disponible las 24 horas del día,
+                        los 7 días de la semana. Diagnósticos precisos, consejos expertos.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Herramientas</h4>
+                    <ul>
+                        <li><a href="#diagnostico">Diagnóstico Inteligente</a></li>
+                        <li><a href="#luces">Luces del Tablero</a></li>
+                        <li><a href="#mi-garage">Mi Garage</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#privacidad">Privacidad</a></li>
+                        <li><a href="#terminos">Términos de Uso</a></li>
+                        <li><a href="#cookies">Cookies</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Síguenos</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">TikTok</a>
+                        <a href="#" class="social-link">Instagram</a>
+                        <a href="#" class="social-link">YouTube</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mecánico IA 24/7. Todos los derechos reservados.</p>
+                <p class="disclaimer">
+                    ⚠️ Esta herramienta proporciona orientación general. Para diagnósticos definitivos,
+                    consulta siempre con un mecánico profesional certificado.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="lightModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-body" id="lightModalBody">
+                <!-- Content populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="vehicleModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-body">
+                <h2>Añadir Vehículo</h2>
+                <form id="vehicleForm" class="vehicle-form">
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="vehicleBrand" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="vehicleModel" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Año</label>
+                        <input type="number" id="vehicleYear" min="1980" max="2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kilometraje Actual</label>
+                        <input type="number" id="vehicleMileage" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Vehículo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
