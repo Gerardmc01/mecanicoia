@@ -640,95 +640,214 @@ function filterLights(query) {
 
 
 // ============================================
-// VEHICLE MANAGEMENT
+// ADVANCED GARAGE SYSTEM
 // ============================================
 
-function loadUserVehicles() {
-    const vehiclesList = document.getElementById('vehiclesList');
-    if (!vehiclesList) return;
+let currentVehicleId = null;
 
-    vehiclesList.innerHTML = '';
+function loadUserVehicles() {
+    const select = document.getElementById('garageVehicleSelect');
+    const dashboard = document.getElementById('garageDashboard');
+    const emptyState = document.getElementById('garageEmptyState');
+
+    if (!select) return;
+
+    // Clear existing options except first
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
 
     if (state.userVehicles.length === 0) {
-        vehiclesList.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
-                <p>No tienes vehículos registrados</p>
-            </div>
-        `;
+        dashboard.style.display = 'none';
+        emptyState.style.display = 'block';
         return;
     }
 
+    emptyState.style.display = 'none';
+
     state.userVehicles.forEach((vehicle, index) => {
-        const card = createVehicleCard(vehicle, index);
-        vehiclesList.appendChild(card);
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${vehicle.brand} ${vehicle.model} (${vehicle.year})`;
+        select.appendChild(option);
+    });
+
+    // Event listener for selection
+    select.addEventListener('change', (e) => {
+        const index = e.target.value;
+        if (index !== '') {
+            loadVehicleDashboard(index);
+        } else {
+            dashboard.style.display = 'none';
+        }
     });
 }
 
-function createVehicleCard(vehicle, index) {
-    const card = document.createElement('div');
-    card.className = 'feature-card';
-    card.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-            <div class="feature-icon">🚗</div>
-            <button onclick="removeVehicle(${index})" style="background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer;">
-                Eliminar
-            </button>
-        </div>
-        <h3 class="feature-title">${vehicle.brand} ${vehicle.model}</h3>
-        <div style="color: var(--text-secondary); margin-bottom: 1rem;">
-            <div>📅 Año: ${vehicle.year}</div>
-            <div>📊 Kilometraje: ${vehicle.mileage.toLocaleString()} km</div>
-        </div>
-        <div style="background: var(--bg-glass); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
-            <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Próximo mantenimiento:</div>
-            <div style="color: var(--text-secondary); font-size: 0.875rem;">
-                ${getNextMaintenance(vehicle.mileage)}
+function loadVehicleDashboard(index) {
+    const vehicle = state.userVehicles[index];
+    currentVehicleId = index;
+
+    const dashboard = document.getElementById('garageDashboard');
+    dashboard.style.display = 'grid';
+
+    // Update Stats
+    document.getElementById('statModel').textContent = `${vehicle.brand} ${vehicle.model}`;
+    document.getElementById('statYear').textContent = vehicle.year;
+    document.getElementById('statKm').textContent = `${parseInt(vehicle.mileage).toLocaleString()} km`;
+
+    // Load Maintenance
+    loadMaintenanceList(vehicle);
+
+    // Load History (if any)
+    loadHistoryList(vehicle);
+
+    // Reset Visual Car
+    resetVisualCar();
+}
+
+function loadMaintenanceList(vehicle) {
+    const list = document.getElementById('maintenanceList');
+    list.innerHTML = '';
+
+    const maintenanceItems = [
+        { name: 'Cambio de Aceite', interval: 15000, icon: '🛢️' },
+        { name: 'Filtro de Aire', interval: 30000, icon: '💨' },
+        { name: 'Pastillas de Freno', interval: 50000, icon: '🛑' },
+        { name: 'Bujías', interval: 60000, icon: '⚡' },
+        { name: 'Correa Distribución', interval: 100000, icon: '⚙️' }
+    ];
+
+    maintenanceItems.forEach(item => {
+        const nextKm = Math.ceil(vehicle.mileage / item.interval) * item.interval;
+        const remaining = nextKm - vehicle.mileage;
+        const status = remaining < 1000 ? 'urgent' : (remaining < 5000 ? 'warning' : 'good');
+        const color = status === 'urgent' ? '#ff4757' : (status === 'warning' ? '#ffa502' : '#2ed573');
+
+        const div = document.createElement('div');
+        div.className = 'maintenance-item';
+        div.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="maintenance-check" onclick="toggleMaintenance(this)"></div>
+                <div>
+                    <div style="font-weight: 600;">${item.icon} ${item.name}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        Próximo en: <span style="color: ${color}; font-weight: 700;">${remaining.toLocaleString()} km</span>
+                    </div>
+                </div>
             </div>
-        </div>
-    `;
-    return card;
+        `;
+        list.appendChild(div);
+    });
 }
 
-function getNextMaintenance(mileage) {
-    const nextOil = Math.ceil(mileage / 15000) * 15000;
-    const nextFilter = Math.ceil(mileage / 30000) * 30000;
-
-    return `
-        🔧 Aceite: ${(nextOil - mileage).toLocaleString()} km<br>
-        🔧 Filtros: ${(nextFilter - mileage).toLocaleString()} km
-    `;
+function loadHistoryList(vehicle) {
+    // In a real app, this would come from a database
+    // For now, we'll show a placeholder or saved history if we implemented it
+    const list = document.getElementById('historyList');
+    // Placeholder logic
 }
 
-function handleAddVehicle(e) {
-    e.preventDefault();
+// Visual Car Animation Logic
+function simulateAction(action) {
+    const car = document.getElementById('visualCar');
+    const hood = document.getElementById('carHood');
+    const lights = document.querySelectorAll('.headlight');
 
-    const vehicle = {
-        brand: document.getElementById('vehicleBrand').value,
-        model: document.getElementById('vehicleModel').value,
-        year: parseInt(document.getElementById('vehicleYear').value),
-        mileage: parseInt(document.getElementById('vehicleMileage').value),
-        addedDate: new Date().toISOString()
-    };
+    resetVisualCar();
 
-    state.userVehicles.push(vehicle);
-    localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+    switch (action) {
+        case 'oil':
+        case 'battery':
+            // Open Hood
+            hood.classList.add('open');
+            showStatusBadge(`${action === 'oil' ? '🛢️ Revisando Aceite...' : '🔋 Testeando Batería...'}`);
+            break;
 
-    closeModal('vehicleModal');
-    loadUserVehicles();
+        case 'lights':
+            // Flash Lights
+            lights.forEach(l => l.classList.add('on'));
+            setTimeout(() => lights.forEach(l => l.classList.remove('on')), 500);
+            setTimeout(() => lights.forEach(l => l.classList.add('on')), 1000);
+            setTimeout(() => lights.forEach(l => l.classList.remove('on')), 1500);
+            showStatusBadge('💡 Verificando Luces...');
+            break;
 
-    // Reset form
-    document.getElementById('vehicleForm').reset();
-}
-
-function removeVehicle(index) {
-    if (confirm('¿Seguro que quieres eliminar este vehículo?')) {
-        state.userVehicles.splice(index, 1);
-        localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
-        loadUserVehicles();
+        case 'tires':
+            // Shake Car
+            car.style.transform = 'translateY(-5px)';
+            setTimeout(() => car.style.transform = 'translateY(5px)', 200);
+            setTimeout(() => car.style.transform = 'translateY(0)', 400);
+            showStatusBadge('tyres Revisando Presión...');
+            break;
     }
 }
 
+function resetVisualCar() {
+    document.getElementById('carHood').classList.remove('open');
+    document.querySelectorAll('.headlight').forEach(l => l.classList.remove('on'));
+    document.querySelectorAll('.status-badge').forEach(b => b.classList.remove('visible'));
+}
+
+function showStatusBadge(text) {
+    // Create a temporary badge or use existing ones
+    const badge = document.createElement('div');
+    badge.className = 'status-badge visible';
+    badge.style.position = 'absolute';
+    badge.style.top = '50%';
+    badge.style.left = '50%';
+    badge.style.transform = 'translate(-50%, -50%)';
+    badge.style.zIndex = '10';
+    badge.textContent = text;
+
+    document.querySelector('.visual-car-container').appendChild(badge);
+
+    setTimeout(() => {
+        badge.remove();
+    }, 2000);
+}
+
+// Tab Switching
+document.querySelectorAll('.garage-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.garage-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+        tab.classList.add('active');
+        document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+    });
+});
+
+// Add Vehicle Handler
+function handleAddVehicle(e) {
+    e.preventDefault();
+
+    const brand = document.getElementById('vehicleBrand').value;
+    const model = document.getElementById('vehicleModel').value;
+    const year = document.getElementById('vehicleYear').value;
+    const mileage = document.getElementById('vehicleMileage').value;
+
+    const newVehicle = { brand, model, year, mileage, history: [] };
+
+    state.userVehicles.push(newVehicle);
+    localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+    loadUserVehicles();
+    closeModal('vehicleModal');
+
+    // Select the new vehicle
+    const select = document.getElementById('garageVehicleSelect');
+    select.value = state.userVehicles.length - 1;
+    select.dispatchEvent(new Event('change'));
+
+    e.target.reset();
+}
+
+// Make functions global for onclick events
+window.simulateAction = simulateAction;
+window.toggleMaintenance = function (el) {
+    el.classList.toggle('checked');
+    // Here you would save the maintenance record
+};
 // ============================================
 // MODAL MANAGEMENT
 // ============================================
@@ -754,12 +873,38 @@ function closeModal(modalId) {
 // ============================================
 
 function toggleMobileMenu() {
-    const navMenu = document.querySelector('.nav-menu');
+    const navMenu = document.getElementById('navMenu');
     const menuToggle = document.getElementById('menuToggle');
 
     navMenu.classList.toggle('active');
     menuToggle.classList.toggle('active');
 }
+
+// Close menu when clicking on a link
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const navMenu = document.getElementById('navMenu');
+    const menuToggle = document.getElementById('menuToggle');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+            }
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navMenu && menuToggle) {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+            }
+        }
+    });
+});
 
 // ============================================
 // UTILITY FUNCTIONS

@@ -91,6 +91,7 @@
     </script>
 
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="garage-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -106,10 +107,11 @@
                 <span class="logo-icon">🔧</span>
                 <span class="logo-text">Mecánico IA <span class="accent">24/7</span></span>
             </div>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="#inicio" class="nav-link active">Inicio</a></li>
                 <li><a href="#diagnostico" class="nav-link">Diagnóstico</a></li>
                 <li><a href="#luces" class="nav-link">Luces del Tablero</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="#mi-garage" class="nav-link">Mi Garage</a></li>
             </ul>
             <button class="menu-toggle" id="menuToggle">
@@ -130,13 +132,12 @@
                     <span>Disponible 24/7 • Respuestas en segundos</span>
                 </div>
                 <h1 class="hero-title">
-                    ¿Qué Le Pasa a Mi Coche?<br>
-                    <span class="gradient-text">Diagnóstico Gratis con IA</span>
+                    Tu Mecánico Personal<br>
+                    <span class="gradient-text">Impulsado por IA</span>
                 </h1>
                 <p class="hero-description">
-                    ¿Tu coche hace ruido al frenar? ¿Se encendió la luz del motor? ¿Pierde potencia o vibra el volante?
-                    Descubre al instante qué le pasa, causas probables, costes reales y soluciones. Gratis y disponible
-                    24/7.
+                    Diagnóstico inteligente de averías, análisis de ruidos, explicación de luces del tablero
+                    y consejos personalizados de mantenimiento. Todo en un solo lugar.
                 </p>
                 <div class="hero-cta">
                     <button class="btn btn-primary" id="startDiagnosis">
@@ -318,23 +319,122 @@
 
 
 
-    <!-- My Garage -->
+    <!-- Mi Garage Avanzado -->
     <section id="mi-garage" class="module-section garage-module">
         <div class="container">
             <div class="module-header">
-                <h2 class="module-title">Mi Garage</h2>
-                <p class="module-subtitle">Guarda tus vehículos y recibe alertas de mantenimiento preventivo</p>
+                <h2 class="module-title">Mi Garage Inteligente</h2>
+                <p class="module-subtitle">Gestión centralizada de tus vehículos, mantenimientos y diagnósticos</p>
             </div>
-            <div class="garage-container">
-                <div class="add-vehicle-card">
-                    <div class="add-icon">➕</div>
-                    <h3>Añadir Vehículo</h3>
-                    <p>Registra tu coche para recibir recordatorios de mantenimiento</p>
-                    <button class="btn btn-primary" id="addVehicle">Añadir Coche</button>
+
+            <!-- Vehicle Selector & Filters -->
+            <div class="garage-filters" style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <select id="garageVehicleSelect" class="select-input" style="flex: 1; min-width: 200px;">
+                    <option value="">Seleccionar Vehículo...</option>
+                </select>
+                <button class="btn btn-secondary" id="addVehicleBtn">➕ Añadir Coche</button>
+            </div>
+
+            <div class="garage-dashboard" id="garageDashboard" style="display: none;">
+                <!-- Left Column: Visual Car & Stats -->
+                <div class="garage-visuals">
+                    <div class="visual-car-container">
+                        <div class="css-car" id="visualCar">
+                            <div class="car-body">
+                                <div class="car-hood" id="carHood"></div>
+                                <div class="car-lights">
+                                    <div class="headlight left"></div>
+                                    <div class="headlight right"></div>
+                                </div>
+                                <div class="car-status-indicators" id="carStatusIndicators">
+                                    <div class="status-badge" id="oilBadge">🛢️ Aceite OK</div>
+                                    <div class="status-badge" id="brakesBadge">🛑 Frenos OK</div>
+                                    <div class="status-badge" id="batteryBadge">🔋 Batería OK</div>
+                                </div>
+                            </div>
+                            <div class="car-wheels">
+                                <div class="wheel left"></div>
+                                <div class="wheel right"></div>
+                            </div>
+                        </div>
+                        <div
+                            style="position: absolute; bottom: 20px; left: 20px; color: var(--text-muted); font-size: 0.8rem;">
+                            * Interactúa con los botones de mantenimiento para ver la animación
+                        </div>
+                    </div>
+
+                    <div class="vehicle-stats"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
+                            <div style="font-weight: 600;" id="statModel">Modelo</div>
+                        </div>
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
+                            <div style="font-weight: 600;" id="statYear">Año</div>
+                        </div>
+                        <div class="stat-card"
+                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
+                            <div style="font-weight: 600;" id="statKm">0 km</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="vehicles-list" id="vehiclesList">
-                    <!-- Vehicles will be populated by JavaScript -->
+
+                <!-- Right Column: Maintenance & History -->
+                <div class="garage-controls">
+                    <div class="garage-tabs">
+                        <button class="garage-tab active" data-tab="maintenance">Mantenimiento</button>
+                        <button class="garage-tab" data-tab="history">Historial</button>
+                    </div>
+
+                    <!-- Maintenance Tab -->
+                    <div id="tab-maintenance" class="tab-content">
+                        <div class="maintenance-card">
+                            <h3 style="margin-bottom: 1rem;">Próximos Mantenimientos</h3>
+                            <div id="maintenanceList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="maintenance-card" style="margin-top: 1rem;">
+                            <h3 style="margin-bottom: 1rem;">Acciones Rápidas</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('oil')">Cambiar
+                                    Aceite</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('lights')">Revisar
+                                    Luces</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('tires')">Revisar
+                                    Ruedas</button>
+                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('battery')">Test
+                                    Batería</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="tab-history" class="tab-content" style="display: none;">
+                        <div class="maintenance-card">
+                            <h3 style="margin-bottom: 1rem;">Historial de Averías</h3>
+                            <div id="historyList" style="max-height: 300px; overflow-y: auto;">
+                                <p style="color: var(--text-muted); text-align: center;">No hay historial registrado</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="garageEmptyState"
+                style="text-align: center; padding: 4rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🚘</div>
+                <h3>Tu Garage está vacío</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Añade tu primer vehículo para gestionar
+                    mantenimientos y averías</p>
+                <button class="btn btn-primary" onclick="document.getElementById('addVehicleBtn').click()">Añadir Mi
+                    Primer Coche</button>
             </div>
         </div>
     </section>
