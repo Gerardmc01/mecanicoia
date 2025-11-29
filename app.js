@@ -14,13 +14,7 @@ const state = {
 // INITIALIZATION
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
-    setupEventListeners();
-    loadDashboardLights();
-    loadUserVehicles();
-    setupScrollEffects();
-});
+
 
 function initializeApp() {
     console.log('🔧 Mecánico IA 24/7 initialized');
@@ -36,107 +30,7 @@ function initializeApp() {
 // EVENT LISTENERS
 // ============================================
 
-function setupEventListeners() {
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', handleNavigation);
-    });
 
-    // Hero CTA buttons
-    const startDiagnosisBtn = document.getElementById('startDiagnosis');
-    if (startDiagnosisBtn) {
-        startDiagnosisBtn.addEventListener('click', () => {
-            scrollToSection('diagnostico');
-        });
-    }
-
-    const learnMoreBtn = document.getElementById('learnMore');
-    if (learnMoreBtn) {
-        learnMoreBtn.addEventListener('click', () => {
-            scrollToSection('diagnostico');
-        });
-    }
-
-    // Feature cards
-    document.querySelectorAll('.feature-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            const module = e.currentTarget.dataset.module;
-            if (module) {
-                scrollToSection(module);
-            }
-        });
-    });
-
-    // Chat functionality
-    const sendBtn = document.getElementById('sendMessage');
-    const chatInput = document.getElementById('chatInput');
-
-    if (sendBtn) {
-        sendBtn.addEventListener('click', sendChatMessage);
-    }
-
-    if (chatInput) {
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-
-        // Auto-resize textarea
-        chatInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
-    }
-
-    // Suggestion chips
-    document.querySelectorAll('.suggestion-chip').forEach(chip => {
-        chip.addEventListener('click', (e) => {
-            const text = e.target.textContent;
-            chatInput.value = text;
-            sendChatMessage();
-        });
-    });
-
-    // Lights search
-    const lightsSearch = document.getElementById('lightsSearch');
-    if (lightsSearch) {
-        lightsSearch.addEventListener('input', (e) => {
-            filterLights(e.target.value);
-        });
-    }
-
-
-    // Vehicle management
-    const addVehicleBtn = document.getElementById('addVehicle');
-    if (addVehicleBtn) {
-        addVehicleBtn.addEventListener('click', () => {
-            openModal('vehicleModal');
-        });
-    }
-
-    const vehicleForm = document.getElementById('vehicleForm');
-    if (vehicleForm) {
-        vehicleForm.addEventListener('submit', handleAddVehicle);
-    }
-
-    // Modal close buttons
-    document.querySelectorAll('.modal-close, .modal-overlay').forEach(element => {
-        element.addEventListener('click', (e) => {
-            const modal = e.target.closest('.modal');
-            if (modal) {
-                closeModal(modal.id);
-            }
-        });
-    });
-
-    // Menu toggle for mobile
-    const menuToggle = document.getElementById('menuToggle');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMobileMenu);
-    }
-}
 
 // ============================================
 // NAVIGATION
@@ -961,6 +855,10 @@ function closeModal(modalId) {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+    loadDashboardLights();
+    setupScrollEffects();
+
     // Check if we are on the garage page
     const isGaragePage = document.getElementById('garageVehicleSelect');
 
