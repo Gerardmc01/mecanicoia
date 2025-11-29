@@ -523,13 +523,77 @@
                         <input type="number" id="vehicleMileage" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Vehículo</button>
-                </form>
-            </div>
-        </div>
-    </div>
+                    <!-- Modal Añadir Vehículo -->
+                    <div id="vehicleModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal" onclick="closeModal('vehicleModal')">&times;</span>
+                            <h2>Añadir Nuevo Vehículo</h2>
+                            <form id="vehicleForm" onsubmit="handleAddVehicle(event)">
+                                <div class="form-group">
+                                    <label>Marca</label>
+                                    <input type="text" id="vehicleBrand" class="form-input"
+                                        placeholder="Ej: Ford, Seat, BMW..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Modelo</label>
+                                    <input type="text" id="vehicleModel" class="form-input"
+                                        placeholder="Ej: Fiesta, Ibiza, Serie 3..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Año</label>
+                                    <input type="number" id="vehicleYear" class="form-input" placeholder="Ej: 2018"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kilometraje Actual</label>
+                                    <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000"
+                                        required>
+                                </div>
+                                <button type="submit" class="btn btn-primary"
+                                    style="width: 100%; margin-top: 1rem;">Guardar Vehículo</button>
+                            </form>
+                        </div>
+                    </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+                    <!-- Modal Añadir Registro (Bitácora) -->
+                    <div id="logModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal" onclick="closeModal('logModal')">&times;</span>
+                            <h2>Añadir al Historial</h2>
+                            <form id="logForm" onsubmit="handleAddLog(event)">
+                                <div class="form-group">
+                                    <label>Tipo de Registro</label>
+                                    <select id="logType" class="select-input" required>
+                                        <option value="mantenimiento">🛠️ Mantenimiento (Aceite, Filtros...)</option>
+                                        <option value="averia">⚠️ Avería / Reparación</option>
+                                        <option value="modificacion">✨ Modificación / Extra (Alerón, Llantas...)
+                                        </option>
+                                        <option value="taller">👨‍🔧 Visita al Taller</option>
+                                        <option value="otro">📝 Nota General</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha</label>
+                                    <input type="date" id="logDate" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción</label>
+                                    <textarea id="logDescription" class="form-input" rows="3"
+                                        placeholder="Ej: Cambio de aceite y filtro, puse un alerón nuevo, ruido en frenos..."
+                                        required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Coste (Opcional)</label>
+                                    <input type="number" id="logCost" class="form-input" placeholder="Ej: 150">
+                                </div>
+                                <button type="submit" class="btn btn-primary"
+                                    style="width: 100%; margin-top: 1rem;">Guardar Registro</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <script src="data.js"></script>
+                    <script src="app.js"></script>
 </body>
 
 </html>

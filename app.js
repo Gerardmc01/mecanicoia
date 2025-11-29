@@ -143,9 +143,11 @@ function setupEventListeners() {
 // ============================================
 
 function handleNavigation(e) {
-    e.preventDefault();
     const href = e.target.getAttribute('href');
+
+    // Only handle internal anchors
     if (href && href.startsWith('#')) {
+        e.preventDefault();
         const sectionId = href.substring(1);
         scrollToSection(sectionId);
 
@@ -155,6 +157,7 @@ function handleNavigation(e) {
         });
         e.target.classList.add('active');
     }
+    // If it's not an anchor (e.g. blog.html), let the browser handle it naturally
 }
 
 function scrollToSection(sectionId) {
@@ -741,11 +744,96 @@ function loadMaintenanceList(vehicle) {
 }
 
 function loadHistoryList(vehicle) {
-    // In a real app, this would come from a database
-    // For now, we'll show a placeholder or saved history if we implemented it
     const list = document.getElementById('historyList');
-    // Placeholder logic
+    list.innerHTML = '';
+
+    // Add "Add Log" Button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn btn-sm btn-primary';
+    addBtn.style.width = '100%';
+    addBtn.style.marginBottom = '1rem';
+    addBtn.textContent = '➕ Añadir Registro (Bitácora)';
+    addBtn.onclick = () => openModal('logModal');
+    list.appendChild(addBtn);
+
+    if (!vehicle.history || vehicle.history.length === 0) {
+        const empty = document.createElement('p');
+        empty.style.color = 'var(--text-muted)';
+        empty.style.textAlign = 'center';
+        empty.textContent = 'No hay registros. ¡Añade el primero!';
+        list.appendChild(empty);
+        return;
+    }
+
+    // Sort by date desc
+    const sortedHistory = [...vehicle.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sortedHistory.forEach(log => {
+        const item = document.createElement('div');
+        item.className = 'maintenance-item';
+        item.style.flexDirection = 'column';
+        item.style.alignItems = 'flex-start';
+        item.style.gap = '0.5rem';
+
+        let icon = '📝';
+        if (log.type === 'mantenimiento') icon = '🛠️';
+        if (log.type === 'averia') icon = '⚠️';
+        if (log.type === 'modificacion') icon = '✨';
+        if (log.type === 'taller') icon = '👨‍🔧';
+
+        item.innerHTML = `
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <span style="font-weight: 600;">${icon} ${log.type.toUpperCase()}</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">${new Date(log.date).toLocaleDateString()}</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">${log.description}</p>
+            ${log.cost ? `<div style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">Coste: ${log.cost}€</div>` : ''}
+        `;
+        list.appendChild(item);
+    });
 }
+
+function handleAddLog(e) {
+    e.preventDefault();
+    if (currentVehicleId === null) return;
+
+    const type = document.getElementById('logType').value;
+    const date = document.getElementById('logDate').value;
+    const description = document.getElementById('logDescription').value;
+    const cost = document.getElementById('logCost').value;
+
+    const newLog = {
+        type,
+        date,
+        description,
+        cost
+    };
+
+    if (!state.userVehicles[currentVehicleId].history) {
+        state.userVehicles[currentVehicleId].history = [];
+    }
+
+    state.userVehicles[currentVehicleId].history.push(newLog);
+    localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+    loadHistoryList(state.userVehicles[currentVehicleId]);
+    closeModal('logModal');
+    e.target.reset();
+}
+
+// Connect Add Vehicle Button
+document.addEventListener('DOMContentLoaded', () => {
+    const addVehicleBtn = document.getElementById('addVehicleBtn');
+    if (addVehicleBtn) {
+        addVehicleBtn.addEventListener('click', () => openModal('vehicleModal'));
+    }
+
+    // Set today as default date for log
+    const dateInput = document.getElementById('logDate');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+    }
+});
 
 // Visual Car Animation Logic
 function simulateAction(action) {
