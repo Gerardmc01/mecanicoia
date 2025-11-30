@@ -5,7 +5,7 @@
 // State Management
 const state = {
     currentModule: 'inicio',
-    chatHistory: [],
+    chatHistory: JSON.parse(localStorage.getItem('chatHistory')) || [],
     userVehicles: JSON.parse(localStorage.getItem('userVehicles')) || [],
     favorites: JSON.parse(localStorage.getItem('favorites')) || []
 };
@@ -14,7 +14,46 @@ const state = {
 // INITIALIZATION
 // ============================================
 
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+    setupScrollEffects();
+    loadDashboardLights();
+    loadUserVehicles();
+    loadChatHistory(); // Load saved messages
 
+    // Event Listeners
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+    }
+
+    // Modal Closers
+    window.onclick = (event) => {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    // Add Vehicle Form
+    const addVehicleForm = document.getElementById('addVehicleForm');
+    if (addVehicleForm) {
+        addVehicleForm.addEventListener('submit', handleAddVehicle);
+    }
+
+    // Edit Vehicle Form
+    const editVehicleForm = document.getElementById('editVehicleForm');
+    if (editVehicleForm) {
+        editVehicleForm.addEventListener('submit', handleEditVehicle);
+    }
+
+    // Add Log Form
+    const logForm = document.getElementById('logForm');
+    if (logForm) {
+        logForm.addEventListener('submit', handleAddLog);
+    }
+});
 
 function initializeApp() {
     console.log('🔧 Mecánico IA 24/7 initialized');
@@ -25,12 +64,6 @@ function initializeApp() {
         // Already has initial message from HTML
     }
 }
-
-// ============================================
-// EVENT LISTENERS
-// ============================================
-
-
 
 // ============================================
 // NAVIGATION
@@ -124,6 +157,31 @@ function toggleMobileMenu() {
 // CHAT / DIAGNOSTIC MODULE
 // ============================================
 
+function loadChatHistory() {
+    const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages) return;
+
+    // Clear default messages if we have history
+    if (state.chatHistory.length > 0) {
+        // Keep the first welcome message if it exists, or clear all
+        // Ideally we want to render the history
+        chatMessages.innerHTML = '';
+
+        // Add initial welcome if history is empty (but here it's not)
+        // or just render history
+        state.chatHistory.forEach(msg => {
+            addChatMessage(msg.content, msg.role, false); // false = don't scroll yet
+        });
+
+        // Scroll to bottom after loading
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Hide suggestions if we have history
+        const suggestions = document.getElementById('chatSuggestions');
+        if (suggestions) suggestions.style.display = 'none';
+    }
+}
+
 async function sendChatMessage() {
     const chatInput = document.getElementById('chatInput');
     const chatMessages = document.getElementById('chatMessages');
@@ -138,26 +196,81 @@ async function sendChatMessage() {
 
     // Hide suggestions after first message
     const suggestions = document.getElementById('chatSuggestions');
-    if (suggestions && state.chatHistory.length === 0) {
+    if (suggestions) {
         suggestions.style.display = 'none';
     }
 
-    // Save to history
-    state.chatHistory.push({ role: 'user', content: message });
+    // Save to history state
+    const userMsgObj = { role: 'user', content: message };
+    state.chatHistory.push(userMsgObj);
+    localStorage.setItem('chatHistory', JSON.stringify(state.chatHistory));
 
     // Show typing indicator
     const typingIndicator = addTypingIndicator();
 
-    // Simulate AI response (in production, this would call your AI API)
-    setTimeout(() => {
+    try {
+        // CONFIGURACIÓN: Cambia esta URL por la de tu Cloudflare Worker
+        // Ejemplo: 'https://mecanico-ia-api.TU-USUARIO.workers.dev'
+        const API_URL = 'https://mecanico-ia-api.YOUR-SUBDOMAIN.workers.dev';
+
+        // Si la URL aún no está configurada, usar fallback local
+        if (API_URL.includes('YOUR-SUBDOMAIN')) {
+            console.warn('⚠️ API URL no configurada. Usando IA local de respaldo.');
+            setTimeout(() => {
+                typingIndicator.remove();
+                const response = generateDiagnosticResponse(message);
+                addChatMessage(response, 'assistant');
+                state.chatHistory.push({ role: 'assistant', content: response });
+                localStorage.setItem('chatHistory', JSON.stringify(state.chatHistory));
+            }, 1500);
+            return;
+        }
+
+        // Llamar a la API de Gemini a través del Worker
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                history: state.chatHistory.slice(0, -1) // Enviar historial sin el mensaje actual
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+
+        const data = await response.json();
         typingIndicator.remove();
-        const response = generateDiagnosticResponse(message);
-        addChatMessage(response, 'assistant');
-        state.chatHistory.push({ role: 'assistant', content: response });
-    }, 1500);
+
+        const aiResponse = data.response;
+        addChatMessage(aiResponse, 'assistant');
+
+        // Save assistant response
+        state.chatHistory.push({ role: 'assistant', content: aiResponse });
+        localStorage.setItem('chatHistory', JSON.stringify(state.chatHistory));
+
+    } catch (error) {
+        console.error('Error al conectar con la IA:', error);
+        typingIndicator.remove();
+
+        // Fallback a IA local si falla la API
+        const fallbackResponse = generateDiagnosticResponse(message);
+        addChatMessage(fallbackResponse, 'assistant');
+        state.chatHistory.push({ role: 'assistant', content: fallbackResponse });
+        localStorage.setItem('chatHistory', JSON.stringify(state.chatHistory));
+
+        // Mostrar aviso al usuario
+        addChatMessage(
+            '⚠️ *Nota: Estoy funcionando en modo offline. Para diagnósticos más precisos, verifica la conexión.*',
+            'assistant'
+        );
+    }
 }
 
-function addChatMessage(text, role) {
+function addChatMessage(text, role, shouldScroll = true) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${role}-message`;
@@ -178,7 +291,10 @@ function addChatMessage(text, role) {
     messageDiv.appendChild(content);
 
     chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    if (shouldScroll) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 }
 
 function addTypingIndicator() {
@@ -211,235 +327,129 @@ function formatMessage(text) {
 function generateDiagnosticResponse(userMessage) {
     const lowerMessage = userMessage.toLowerCase();
 
-    // Check for noise-related issues
-    if (lowerMessage.includes('ruido') || lowerMessage.includes('sonido') || lowerMessage.includes('chirrido')) {
-        if (lowerMessage.includes('freno') || lowerMessage.includes('frenar')) {
+    // 1. GREETINGS & GENERAL
+    if (lowerMessage.match(/hola|buenos dias|buenas|hey/)) {
+        return `👋 **¡Hola! Soy tu Mecánico IA.**
+        
+Estoy listo para ayudarte a diagnosticar problemas en tu coche. Cuéntame qué síntomas notas.
+Por ejemplo:
+- "Escucho un chirrido al frenar"
+- "El coche no arranca pero las luces encienden"
+- "Sale humo blanco del escape"
+- "Vibra el volante a 100 km/h"`;
+    }
+
+    // 2. STARTING ISSUES
+    if (lowerMessage.includes('arranca') || lowerMessage.includes('encender')) {
+        if (lowerMessage.includes('no') && (lowerMessage.includes('luces') || lowerMessage.includes('bateria'))) {
+            return `🔍 **Diagnóstico: Problema de Arranque**
+
+**Síntoma:** El coche no arranca pero hay luces/batería.
+
+**Causas probables:**
+1. **Motor de arranque** (60%): Si oyes un "clic" pero no gira.
+2. **Batería débil** (30%): Tiene carga para luces pero no para mover el motor.
+3. **Inmovilizador** (10%): Fallo en la llave o sistema de seguridad.
+
+**Prueba rápida:** Intenta encender las luces largas y arrancar. Si las luces se apagan del todo, es batería. Si no bajan de intensidad, es motor de arranque.`;
+        }
+        return `🔍 **Diagnóstico: El coche no arranca**
+
+Para afinar, dime:
+1. ¿Hace algún ruido al girar la llave (clic, intento de giro, silencio total)?
+2. ¿Funcionan las luces del cuadro?
+3. ¿Fue de repente o ya fallaba antes?`;
+    }
+
+    // 3. BRAKES (NOISE)
+    if (lowerMessage.includes('freno') || lowerMessage.includes('frenar')) {
+        if (lowerMessage.includes('ruido') || lowerMessage.includes('chirrido')) {
             return `🔍 **Diagnóstico: Ruido al frenar**
 
 **Causas más probables:**
-1. **Pastillas de freno gastadas** (70% probabilidad) - Las pastillas tienen un indicador de desgaste que hace ruido cuando están al límite
-2. **Discos de freno cristalizados** (20%) - Por sobrecalentamiento o uso intenso
-3. **Piedras o suciedad** (10%) - Entre la pastilla y el disco
+1. **Pastillas de freno gastadas** (70%): El testigo metálico roza el disco.
+2. **Discos cristalizados** (20%): Por sobrecalentamiento.
+3. **Suciedad/Piedras** (10%): Entre pastilla y disco.
 
-**Nivel de gravedad:** ⚠️ MEDIO-ALTO
-Si es un chirrido metálico constante, las pastillas están muy gastadas.
-
-**Qué hacer:**
-✅ Revisar grosor de pastillas (mínimo 3mm)
-✅ Inspeccionar estado de discos
-✅ No demorar la reparación - puede dañar los discos
-
-**Coste estimado:** 150€ - 400€ (pastillas + mano de obra)
-Si hay que cambiar discos: 300€ - 600€
-
-**Consejo:** Si el ruido solo ocurre en las primeras frenadas del día y luego desaparece, puede ser condensación normal. Si es constante, revisar urgente.
-
-¿Quieres que te explique cómo revisar tú mismo el grosor de las pastillas?`;
+**Gravedad:** ⚠️ MEDIA. Si es metal contra metal, urge cambiarlo.
+**Coste estimado:** 120€ - 250€ (eje delantero).`;
         }
+        if (lowerMessage.includes('vibra')) {
+            return `🔍 **Diagnóstico: Vibración al frenar**
 
-        if (lowerMessage.includes('motor')) {
-            return `🔍 **Diagnóstico: Ruido en el motor**
+**Causa principal:** **Discos de freno alabeados (deformados)**.
+Esto ocurre por cambios bruscos de temperatura (ej. lavar coche con frenos calientes).
 
-**Necesito más información:**
-- ¿Es un ruido metálico, silbido, golpeteo o traqueteo?
-- ¿Ocurre en ralentí, al acelerar o siempre?
-- ¿Desde cuándo lo notas?
-
-**Posibles causas según tipo de ruido:**
-
-**Silbido agudo:** 
-- Correa auxiliar desgastada (común, 80€-200€)
-- Fuga en turbo (si lo tiene)
-
-**Golpeteo metálico:**
-- ⚠️ Nivel de aceite bajo (REVISAR YA)
-- Taqués hidráulicos
-- Bielas (grave, 2000€+)
-
-**Traqueteo al acelerar:**
-- Picado de bielas (usar combustible mejor)
-- Sensor de detonación
-
-**Acción inmediata:**
-1. Revisar nivel de aceite
-2. Escuchar si el ruido cambia con las revoluciones
-3. Grabar un audio si es posible
-
-¿Puedes darme más detalles sobre el tipo de ruido?`;
+**Solución:** Cambiar discos y pastillas delanteros.
+**Coste:** 200€ - 400€.`;
         }
     }
 
-    // Check for warning lights
-    if (lowerMessage.includes('luz') || lowerMessage.includes('testigo') || lowerMessage.includes('tablero')) {
-        if (lowerMessage.includes('motor') || lowerMessage.includes('check')) {
-            return `🔍 **Luz Check Engine encendida**
-
-**¿Qué significa?**
-El sistema de gestión del motor ha detectado un problema. Puede ser desde algo simple hasta grave.
-
-**Causas más comunes:**
-1. **Tapón de gasolina mal cerrado** (5% casos) - Revísalo primero
-2. **Sensor de oxígeno** (30%) - 150€-300€
-3. **Catalizador** (15%) - 400€-1200€
-4. **Bujías** (20%) - 80€-200€
-5. **Sensor MAF** (10%) - 100€-250€
-
-**¿Qué hacer?**
-✅ Comprar lector OBD2 (15€-30€ en Amazon) o ir a taller para escanear códigos
-✅ Revisar nivel de aceite
-✅ Verificar tapón de combustible
-✅ Anotar si el coche pierde potencia, consume más o funciona raro
-
-**Urgencia:** 
-- Si la luz parpadea: ⚠️ DETENER - fallo grave
-- Si está fija: Revisar en 1-2 días
-
-**Consejo pro:** Muchos talleres escanean códigos gratis. También puedes comprar un lector OBD2 bluetooth por 20€ y usar app gratuita en el móvil.
-
-¿Notas algún otro síntoma (pérdida potencia, consumo alto, ralentí irregular)?`;
-        }
-    }
-
-    // Check for power loss
-    if (lowerMessage.includes('potencia') || lowerMessage.includes('fuerza') || lowerMessage.includes('acelera')) {
-        return `🔍 **Diagnóstico: Pérdida de potencia**
-
-**Causas más probables:**
-
-**Si es gradual (empeora con el tiempo):**
-1. **Filtro de aire sucio** (40%) - Fácil, 20€-40€
-2. **Inyectores obstruidos** (30%) - Limpieza 100€-200€
-3. **Turbo con problemas** (si lo tiene) - 500€-2000€
-
-**Si es repentino:**
-1. **Sensor MAF defectuoso** - 100€-250€
-2. **Válvula EGR bloqueada** - 150€-400€
-3. **Filtro de combustible** - 30€-80€
-
-**Si solo en subidas:**
-- Embrague patinando (manual) - 400€-900€
-- Convertidor de par (automático) - 800€-2000€
-
-**Prueba rápida:**
-1. Revisar filtro de aire (abre la caja y míralo)
-2. Usar limpiador de inyectores (aditivo) - 10€
-3. Escanear códigos de error
-
-**Coste estimado:** 20€ - 2000€ según causa
-
-¿La pérdida es gradual o repentina? ¿Solo en subidas o siempre?`;
-    }
-
-    // Check for smoke
+    // 4. SMOKE COLORS
     if (lowerMessage.includes('humo')) {
-        let color = 'no especificado';
-        if (lowerMessage.includes('blanco')) color = 'blanco';
-        if (lowerMessage.includes('azul')) color = 'azul';
-        if (lowerMessage.includes('negro')) color = 'negro';
+        if (lowerMessage.includes('blanco')) return `☁️ **Humo Blanco:**
+- **En frío:** Condensación normal (vapor de agua). Desaparece al calentar.
+- **En caliente:** ⚠️ **Junta de culata** o rotura de bloque (consume refrigerante). ¡Grave! Revisa el nivel de agua.`;
 
-        if (color === 'blanco') {
-            return `🔍 **Humo blanco del escape**
+        if (lowerMessage.includes('negro')) return `☁️ **Humo Negro:**
+- **Diésel:** Mala combustión, inyectores sucios o filtro de aire taponado.
+- **Gasolina:** Mezcla muy rica (demasiada gasolina). Sonda lambda o inyectores.`;
 
-**Causas:**
+        if (lowerMessage.includes('azul')) return `☁️ **Humo Azulado:**
+- ⚠️ **Consumo de aceite**. El motor está quemando aceite.
+- Causas: Segmentos gastados, guías de válvula o turbo roto.
+- Revisa el nivel de aceite urgentemente.`;
 
-**Humo blanco al arrancar en frío (desaparece):**
-✅ **NORMAL** - Es condensación de agua
-
-**Humo blanco constante:**
-⚠️ **Refrigerante entrando en motor**
-- Junta de culata dañada (800€-1500€)
-- Culata agrietada (1500€-3000€)
-- Bloque motor fisurado (grave)
-
-**Síntomas adicionales si es grave:**
-- Nivel de refrigerante baja constantemente
-- Aceite con aspecto lechoso
-- Motor se calienta más de lo normal
-- Pérdida de potencia
-
-**Qué hacer:**
-1. Revisar nivel de refrigerante
-2. Revisar aceite (si está lechoso, GRAVE)
-3. Oler el humo (si huele dulce, es refrigerante)
-4. No seguir conduciendo si es constante
-
-**Urgencia:** Alta si es constante
-
-¿El humo solo sale al arrancar o es constante?`;
-        }
-
-        if (color === 'azul') {
-            return `🔍 **Humo azul del escape**
-
-**Causa:** Motor quemando aceite ⚠️
-
-**Origen del problema:**
-1. **Segmentos de pistón gastados** (común en motores con km)
-2. **Retenes de válvula** (más barato de reparar)
-3. **Turbo con fuga de aceite** (si lo tiene)
-
-**Gravedad:** ALTA - El motor está desgastado
-
-**Síntomas adicionales:**
-- Consumo de aceite elevado
-- Pérdida de potencia
-- Más humo al acelerar fuerte
-
-**Coste reparación:**
-- Retenes de válvula: 400€-800€
-- Segmentos (rectificado motor): 1500€-3000€
-- Turbo: 500€-1500€
-
-**Qué hacer ahora:**
-1. Revisar nivel de aceite semanalmente
-2. No dejar que baje del mínimo
-3. Valorar si merece la pena reparar según valor del coche
-4. Considerar vender "tal cual" si el coche es viejo
-
-**Consejo:** Si el coche tiene más de 200.000 km y vale menos de 3000€, puede no merecer la pena repararlo.
-
-¿Cuánto aceite consume aproximadamente?`;
-        }
-
-        return `🔍 **Humo del escape**
-
-Para darte un diagnóstico preciso, necesito saber:
-- **¿De qué color es el humo?** (blanco, azul, negro)
-- ¿Sale solo al arrancar o constantemente?
-- ¿Cuándo lo notas más?
-
-**Guía rápida:**
-- **Blanco:** Agua/refrigerante
-- **Azul:** Aceite quemándose
-- **Negro:** Exceso de combustible
-
-¿Puedes especificar el color?`;
+        return `☁️ **Diagnóstico de Humo:** ¿De qué color es el humo? (Blanco, Negro, Azul)`;
     }
 
-    // Default response
-    return `🔧 **Entiendo tu consulta**
+    // 5. VIBRATIONS
+    if (lowerMessage.includes('vibra') || lowerMessage.includes('temblor')) {
+        if (lowerMessage.includes('volante')) return `📳 **Vibración en el Volante:**
+- **A 80-120 km/h:** Ruedas desequilibradas (necesitas equilibrado).
+- **Al frenar:** Discos de freno deformados.
+- **Siempre:** Llanta golpeada o deformada.`;
 
-He registrado tu problema: "${userMessage}"
+        if (lowerMessage.includes('ralenti') || lowerMessage.includes('parado')) return `📳 **Vibración al ralentí (parado):**
+- **Tacos de motor:** Los soportes de goma están rotos y transmiten la vibración del motor al chasis.
+- **Fallo de cilindro:** El motor "cojea" (bujía o inyector mal).`;
+    }
 
-Para darte un diagnóstico más preciso, necesito algunos detalles:
+    // 6. AIR CONDITIONING
+    if (lowerMessage.includes('aire') || lowerMessage.includes('clima')) {
+        if (lowerMessage.includes('no enfria') || lowerMessage.includes('caliente')) return `❄️ **Aire Acondicionado no enfría:**
+1. **Falta de gas:** Necesita una recarga (y buscar fugas). (~50€-80€)
+2. **Compresor no arranca:** Fusible, relé o el propio compresor roto.
+3. **Filtro habitáculo sucio:** Poco caudal de aire.`;
+    }
 
-**Información útil:**
-- Marca y modelo del coche
-- Año aproximado
-- Kilometraje
-- ¿Cuándo ocurre el problema? (arranque, marcha, frenado...)
-- ¿Es constante o intermitente?
-- ¿Hay ruidos, olores o luces encendidas?
+    // 7. BATTERY & ELECTRIC
+    if (lowerMessage.includes('bateria') || lowerMessage.includes('alternador')) {
+        return `🔋 **Problemas Eléctricos:**
+- **Batería:** Vida útil media 4-5 años. Si tiene más, cámbiala.
+- **Alternador:** Si se enciende la luz de batería CON el motor en marcha, el alternador no carga.`;
+    }
 
-**Mientras tanto, puedes:**
-- Revisar el nivel de aceite y refrigerante
-- Verificar presión de neumáticos
-- Comprobar si hay luces de aviso en el tablero
-- Escanear códigos de error si tienes lector OBD2
+    // 8. GENERIC NOISE
+    if (lowerMessage.includes('ruido') || lowerMessage.includes('sonido')) {
+        if (lowerMessage.includes('motor')) return `🔊 **Ruido en Motor:**
+- **Tic-tic-tic (rápido):** Taqués hidráulicos o válvulas (falta aceite o desajuste).
+- **Correa chillando:** Correa de accesorios patinando (vieja o destensada).
+- **Golpeteo profundo:** ⚠️ Biela o cigüeñal. Muy grave. Parar motor.`;
 
-También puedes usar las **sugerencias rápidas** arriba o consultar la sección de **Luces del Tablero** si tienes algún testigo encendido.
+        if (lowerMessage.includes('rueda') || lowerMessage.includes('rodamiento')) return `🔊 **Ruido en Ruedas:**
+- **Zumbido que aumenta con velocidad:** Rodamiento de rueda roto (buje). Cambia al girar el volante.`;
+    }
 
-¿Puedes darme más detalles sobre el problema?`;
+    // DEFAULT FALLBACK
+    return `🤔 **Necesito más detalles para ayudarte.**
+
+No estoy seguro de qué problema es con esa descripción. Intenta decirme:
+1. **¿Qué síntoma notas?** (Ruido, humo, no arranca, luz encendida...)
+2. **¿Cuándo pasa?** (En frío, al frenar, a alta velocidad...)
+3. **¿Dónde?** (Motor, ruedas, escape...)
+
+*Ejemplo: "El coche vibra mucho cuando voy a 120 km/h"*`;
 }
 
 // ============================================
@@ -788,7 +798,9 @@ function simulateAction(action) {
 }
 
 function resetVisualCar() {
-    document.getElementById('carHood').classList.remove('open');
+    const hood = document.getElementById('carHood');
+    if (hood) hood.classList.remove('open');
+
     document.querySelectorAll('.headlight').forEach(l => l.classList.remove('on'));
     document.querySelectorAll('.status-badge').forEach(b => b.classList.remove('visible'));
 }
@@ -822,7 +834,6 @@ document.querySelectorAll('.garage-tab').forEach(tab => {
     });
 });
 
-// Add Vehicle Handler
 // Add Vehicle Handler
 function handleAddVehicle(e) {
     e.preventDefault();
@@ -946,199 +957,56 @@ function handleDeleteVehicle() {
 }
 
 // Make functions global for onclick events
-window.simulateAction = simulateAction;
+window.openModal = function (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+};
+
+window.closeModal = function (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
+
 window.toggleMaintenance = function (el) {
     el.classList.toggle('checked');
 };
-window.openModal = openModal;
-window.closeModal = closeModal;
-window.handleAddLog = handleAddLog;
+
+window.sendChatMessage = sendChatMessage;
+window.showSuggestion = function (text) {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.value = text;
+    sendChatMessage();
+};
 window.openEditVehicleModal = openEditVehicleModal;
 window.handleDeleteVehicle = handleDeleteVehicle;
-// ============================================
-// MODAL MANAGEMENT
-// ============================================
 
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+// Clear chat history function
+window.clearChatHistory = function () {
+    if (confirm('¿Estás seguro de que quieres borrar todo el historial del chat?')) {
+        state.chatHistory = [];
+        localStorage.removeItem('chatHistory');
+
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="message assistant-message">
+                <div class="message-avatar">🔧</div>
+                <div class="message-content">
+                    <div class="message-text">
+                        ¡Hola! Soy tu Mecánico IA. Cuéntame qué problema tiene tu coche: ruidos extraños,
+                        pérdida de potencia, vibraciones, humo, olores... Lo que sea. Cuanto más detalles me des,
+                        mejor podré ayudarte.
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Show suggestions again
+        const suggestions = document.getElementById('chatSuggestions');
+        if (suggestions) suggestions.style.display = 'flex';
     }
-}
+};
 
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
-
-// ============================================
-// INITIALIZATION
-// ============================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
-    loadDashboardLights();
-    setupScrollEffects();
-
-    // Check if we are on the garage page
-    const isGaragePage = document.getElementById('garageVehicleSelect');
-
-    if (isGaragePage) {
-        loadUserVehicles();
-
-        // Attach Form Listeners manually to avoid scope issues
-        const vehicleForm = document.getElementById('vehicleForm');
-        if (vehicleForm) {
-            vehicleForm.addEventListener('submit', handleAddVehicle);
-        }
-
-        const logForm = document.getElementById('logForm');
-        if (logForm) {
-            logForm.addEventListener('submit', handleAddLog);
-            // Set default date
-            document.getElementById('logDate').valueAsDate = new Date();
-        }
-
-        const editVehicleForm = document.getElementById('editVehicleForm');
-        if (editVehicleForm) {
-            editVehicleForm.addEventListener('submit', handleEditVehicle);
-        }
-    }
-
-    setupEventListeners();
-
-    // Mobile Menu Logic
-    const navLinks = document.querySelectorAll('.nav-link');
-    const navMenu = document.getElementById('navMenu');
-    const menuToggle = document.getElementById('menuToggle');
-
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMobileMenu);
-    }
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navMenu && navMenu.classList.contains('active')) {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('active');
-            }
-        });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (navMenu && menuToggle) {
-            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('active');
-            }
-        }
-    });
-});
-
-function setupEventListeners() {
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', handleNavigation);
-    });
-
-    // Hero CTA buttons
-    const startDiagnosisBtn = document.getElementById('startDiagnosis');
-    if (startDiagnosisBtn) {
-        startDiagnosisBtn.addEventListener('click', () => {
-            scrollToSection('diagnostico');
-        });
-    }
-
-    const learnMoreBtn = document.getElementById('learnMore');
-    if (learnMoreBtn) {
-        learnMoreBtn.addEventListener('click', () => {
-            scrollToSection('diagnostico');
-        });
-    }
-
-    // Feature cards
-    document.querySelectorAll('.feature-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            const module = e.currentTarget.dataset.module;
-            if (module) {
-                scrollToSection(module);
-            }
-        });
-    });
-
-    // Chat functionality
-    const sendBtn = document.getElementById('sendMessage');
-    const chatInput = document.getElementById('chatInput');
-
-    if (sendBtn) {
-        sendBtn.addEventListener('click', sendChatMessage);
-    }
-
-    if (chatInput) {
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-            }
-        });
-
-        // Auto-resize textarea
-        chatInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
-    }
-
-    // Suggestion chips
-    document.querySelectorAll('.suggestion-chip').forEach(chip => {
-        chip.addEventListener('click', (e) => {
-            const text = e.target.textContent;
-            chatInput.value = text;
-            sendChatMessage();
-        });
-    });
-
-    // Garage Tabs
-    document.querySelectorAll('.garage-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.garage-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-
-            tab.classList.add('active');
-            document.getElementById(`tab - ${tab.dataset.tab} `).style.display = 'block';
-        });
-    });
-}
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// ============================================
-// EXPORT FOR TESTING
-// ============================================
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        generateDiagnosticResponse,
-        formatMessage,
-        state
-    };
-}

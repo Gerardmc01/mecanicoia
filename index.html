@@ -243,8 +243,18 @@
     <section id="diagnostico" class="module-section diagnostic-module">
         <div class="container">
             <div class="module-header">
-                <h2 class="module-title">Diagnóstico Inteligente</h2>
-                <p class="module-subtitle">Cuéntame qué le pasa a tu coche y te ayudaré a identificar el problema</p>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 class="module-title">Diagnóstico Inteligente</h2>
+                        <p class="module-subtitle">Cuéntame qué le pasa a tu coche y te ayudaré a identificar el
+                            problema</p>
+                    </div>
+                    <button onclick="clearChatHistory()" class="btn btn-secondary"
+                        style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        🗑️ Limpiar Chat
+                    </button>
+                </div>
             </div>
             <div class="diagnostic-container">
                 <div class="chat-interface">
