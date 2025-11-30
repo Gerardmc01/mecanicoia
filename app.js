@@ -107,6 +107,20 @@ function setupScrollEffects() {
 }
 
 // ============================================
+// MOBILE MENU TOGGLE
+// ============================================
+
+function toggleMobileMenu() {
+    const navMenu = document.getElementById('navMenu');
+    const menuToggle = document.getElementById('menuToggle');
+
+    if (navMenu && menuToggle) {
+        navMenu.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+    }
+}
+
+// ============================================
 // CHAT / DIAGNOSTIC MODULE
 // ============================================
 
