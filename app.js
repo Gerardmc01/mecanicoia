@@ -598,6 +598,12 @@ function loadVehicleDashboard(index) {
     // Load History (if any)
     loadHistoryList(vehicle);
 
+    // Update Image
+    const carImage = document.getElementById('visualCarImage');
+    if (carImage) {
+        carImage.src = vehicle.image || 'default_car_realistic.png';
+    }
+
     // Reset Visual Car
     resetVisualCar();
 }
@@ -800,6 +806,7 @@ document.querySelectorAll('.garage-tab').forEach(tab => {
 });
 
 // Add Vehicle Handler
+// Add Vehicle Handler
 function handleAddVehicle(e) {
     e.preventDefault();
 
@@ -807,21 +814,100 @@ function handleAddVehicle(e) {
     const model = document.getElementById('vehicleModel').value;
     const year = document.getElementById('vehicleYear').value;
     const mileage = document.getElementById('vehicleMileage').value;
+    const image = document.getElementById('vehicleImage').value;
 
-    const newVehicle = { brand, model, year, mileage, history: [] };
-
-    state.userVehicles.push(newVehicle);
-    localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
-
-    loadUserVehicles();
+    // Simulate AI Generation Experience
     closeModal('vehicleModal');
 
-    // Select the new vehicle
-    const select = document.getElementById('garageVehicleSelect');
-    select.value = state.userVehicles.length - 1;
-    select.dispatchEvent(new Event('change'));
+    // Show loading state if we are adding a new car
+    const dashboard = document.getElementById('garageDashboard');
+    const emptyState = document.getElementById('garageEmptyState');
 
-    e.target.reset();
+    emptyState.style.display = 'none';
+    dashboard.style.display = 'grid'; // Show dashboard immediately to show the "Generating" effect
+
+    // Create temporary vehicle for display
+    const tempVehicle = { brand, model, year, mileage, image: image || 'default_car_realistic.png', history: [] };
+
+    // Show "Generating..." overlay
+    const visualContainer = document.querySelector('.visual-car-container');
+    const originalContent = visualContainer.innerHTML;
+
+    visualContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #2ed573;">
+            <div class="spinner" style="width: 40px; height: 40px; border: 4px solid rgba(46, 213, 115, 0.3); border-top-color: #2ed573; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem;">GENERANDO MODELO 3D...</div>
+            <div style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">Analizando ${brand} ${model}...</div>
+        </div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    `;
+
+    // Simulate delay
+    setTimeout(() => {
+        // Restore content and save
+        visualContainer.innerHTML = originalContent;
+
+        state.userVehicles.push(tempVehicle);
+        localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+        loadUserVehicles();
+
+        // Select the new vehicle
+        const select = document.getElementById('garageVehicleSelect');
+        select.value = state.userVehicles.length - 1;
+        select.dispatchEvent(new Event('change'));
+
+        e.target.reset();
+    }, 3000);
+}
+
+// Edit Vehicle Functions
+function openEditVehicleModal() {
+    if (currentVehicleId === null) return;
+
+    const vehicle = state.userVehicles[currentVehicleId];
+
+    document.getElementById('editVehicleId').value = currentVehicleId;
+    document.getElementById('editVehicleBrand').value = vehicle.brand;
+    document.getElementById('editVehicleModel').value = vehicle.model;
+    document.getElementById('editVehicleYear').value = vehicle.year;
+    document.getElementById('editVehicleMileage').value = vehicle.mileage;
+    document.getElementById('editVehicleImage').value = vehicle.image || '';
+
+    openModal('editVehicleModal');
+}
+
+function handleEditVehicle(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editVehicleId').value;
+    const brand = document.getElementById('editVehicleBrand').value;
+    const model = document.getElementById('editVehicleModel').value;
+    const year = document.getElementById('editVehicleYear').value;
+    const mileage = document.getElementById('editVehicleMileage').value;
+    const image = document.getElementById('editVehicleImage').value;
+
+    if (state.userVehicles[id]) {
+        state.userVehicles[id] = {
+            ...state.userVehicles[id],
+            brand,
+            model,
+            year,
+            mileage,
+            image
+        };
+
+        localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+        loadUserVehicles();
+
+        // Reselect current vehicle to update UI
+        const select = document.getElementById('garageVehicleSelect');
+        select.value = id;
+        select.dispatchEvent(new Event('change'));
+
+        closeModal('editVehicleModal');
+    }
 }
 
 // Make functions global for onclick events
@@ -876,6 +962,11 @@ document.addEventListener('DOMContentLoaded', () => {
             logForm.addEventListener('submit', handleAddLog);
             // Set default date
             document.getElementById('logDate').valueAsDate = new Date();
+        }
+
+        const editVehicleForm = document.getElementById('editVehicleForm');
+        if (editVehicleForm) {
+            editVehicleForm.addEventListener('submit', handleEditVehicle);
         }
     }
 

@@ -72,45 +72,54 @@
             <!-- Dashboard (Hidden by default) -->
             <div class="garage-dashboard" id="garageDashboard" style="display: none;">
                 <!-- Left Column: Visual Car & Stats -->
+                <!-- Left Column: Visual Car & Stats -->
                 <div class="garage-visuals">
-                    <div class="visual-car-container">
-                        <div class="css-car" id="visualCar">
-                            <div class="car-body">
-                                <div class="car-hood" id="carHood"></div>
-                                <div class="car-lights">
-                                    <div class="headlight left"></div>
-                                    <div class="headlight right"></div>
-                                </div>
-                                <div class="car-status-indicators" id="carStatusIndicators"></div>
-                            </div>
-                            <div class="car-wheels">
-                                <div class="wheel left"></div>
-                                <div class="wheel right"></div>
-                            </div>
-                        </div>
+                    <div class="visual-car-container"
+                        style="background: radial-gradient(circle, #2d3436 0%, #000000 100%); border: 1px solid #444;">
+                        <!-- Car Image -->
+                        <img id="visualCarImage" src="default_car_realistic.png" alt="Tu Coche"
+                            style="max-width: 90%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: all 0.5s ease;">
+
+                        <!-- Status Points (Overlay) -->
+                        <div class="status-point" id="point-oil" style="top: 40%; left: 70%;"></div>
+                        <div class="status-point" id="point-battery" style="top: 40%; left: 20%;"></div>
+                        <div class="status-point" id="point-tires" style="bottom: 25%; left: 25%;"></div>
+                        <div class="status-point" id="point-tires-2" style="bottom: 25%; left: 75%;"></div>
+
                         <div
-                            style="position: absolute; bottom: 20px; left: 20px; color: var(--text-muted); font-size: 0.8rem;">
-                            * Interactúa con los botones para ver la animación
+                            style="position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.5); font-family: monospace; font-size: 0.7rem;">
+                            VISTA: STUDIO 3D
                         </div>
                     </div>
 
                     <div class="vehicle-stats"
-                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
-                            <div style="font-weight: 600;" id="statModel">Modelo</div>
+                        style="display: flex; gap: 1rem; margin-top: 1rem; align-items: stretch;">
+                        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div class="stat-card"
+                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
+                                <div style="font-weight: 600;" id="statModel">Modelo</div>
+                            </div>
+                            <div class="stat-card"
+                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
+                                <div style="font-weight: 600;" id="statYear">Año</div>
+                            </div>
+                            <div class="stat-card"
+                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
+                                <div style="font-weight: 600;" id="statKm">0 km</div>
+                            </div>
                         </div>
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
-                            <div style="font-weight: 600;" id="statYear">Año</div>
-                        </div>
-                        <div class="stat-card"
-                            style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
-                            <div style="font-weight: 600;" id="statKm">0 km</div>
-                        </div>
+
+                        <!-- Edit Button -->
+                        <button class="edit-vehicle-btn" onclick="openEditVehicleModal()" title="Editar Vehículo">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -183,8 +192,49 @@
                     <label>Kilometraje Actual</label>
                     <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000" required>
                 </div>
+                <div class="form-group">
+                    <label>URL Imagen (Opcional)</label>
+                    <input type="url" id="vehicleImage" class="form-input"
+                        placeholder="https://ejemplo.com/foto-coche.png">
+                    <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Si lo dejas vacío,
+                        usaremos un modelo 3D genérico.</small>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
                     Vehículo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal EDITAR Vehículo -->
+    <div id="editVehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('editVehicleModal')">&times;</span>
+            <h2>Editar Vehículo</h2>
+            <form id="editVehicleForm">
+                <input type="hidden" id="editVehicleId">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="editVehicleBrand" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="editVehicleModel" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Año</label>
+                    <input type="number" id="editVehicleYear" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Kilometraje Actual</label>
+                    <input type="number" id="editVehicleMileage" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>URL Imagen (Opcional)</label>
+                    <input type="url" id="editVehicleImage" class="form-input"
+                        placeholder="https://ejemplo.com/foto-coche.png">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
+                    Cambios</button>
             </form>
         </div>
     </div>

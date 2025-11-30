@@ -16,101 +16,150 @@
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
-    border: 1px solid var(--border);
     position: relative;
-    overflow: hidden;
-    min-height: 400px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    perspective: 1000px;
+    align-items: center;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
-/* CSS Pure 3D-like Car Representation */
+/* Grid Background Effect */
+.visual-car-container::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background-image:
+        linear-gradient(rgba(46, 213, 115, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(46, 213, 115, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg);
+    animation: gridMove 20s linear infinite;
+    top: -50%;
+}
+
+@keyframes gridMove {
+    0% {
+        transform: perspective(500px) rotateX(60deg) translateY(0);
+    }
+
+    100% {
+        transform: perspective(500px) rotateX(60deg) translateY(40px);
+    }
+}
+
+/* The Car Silhouette */
 .css-car {
-    width: 300px;
-    height: 180px;
+    width: 160px;
+    height: 240px;
+    border: 2px solid #2ed573;
+    border-radius: 30px 30px 10px 10px;
     position: relative;
-    transition: transform 0.5s ease;
-    transform-style: preserve-3d;
-}
-
-.car-body {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--primary) 0%, #2a3b8f 100%);
-    border-radius: 40px 40px 20px 20px;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 20px rgba(46, 213, 115, 0.3), inset 0 0 20px rgba(46, 213, 115, 0.1);
+    background: rgba(46, 213, 115, 0.05);
     z-index: 2;
     transition: all 0.5s ease;
 }
 
-.car-hood {
+/* Internal Car Details (Wireframe style) */
+.css-car::after {
+    content: '';
     position: absolute;
-    top: 0;
-    left: 10%;
-    width: 80%;
-    height: 45%;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 30px 30px 5px 5px;
-    transform-origin: top;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.car-hood.open {
-    transform: rotateX(50deg);
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.car-lights {
-    position: absolute;
-    bottom: 20%;
-    left: 5%;
-    right: 5%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.headlight {
-    width: 40px;
-    height: 25px;
-    background: #fff;
-    border-radius: 50% 20% 20% 50%;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
-}
-
-.headlight.on {
-    background: #fff;
-    box-shadow: 0 0 50px #fff, 0 0 20px #fff inset;
-}
-
-.car-wheels {
-    position: absolute;
-    bottom: -25px;
+    top: 20%;
     left: 10%;
     right: 10%;
-    display: flex;
-    justify-content: space-between;
-    z-index: 3;
+    bottom: 10%;
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    border-radius: 20px 20px 5px 5px;
 }
 
+/* Wheels */
 .wheel {
-    width: 60px;
-    height: 60px;
-    background: #111;
-    border-radius: 50%;
-    border: 4px solid #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: absolute;
+    width: 10px;
+    height: 40px;
+    background: #2ed573;
+    border-radius: 4px;
+    box-shadow: 0 0 10px #2ed573;
 }
 
-.wheel::after {
-    content: '';
+.wheel.left {
+    left: -15px;
+}
+
+.wheel.right {
+    right: -15px;
+}
+
+.wheel.front {
+    top: 30px;
+}
+
+.wheel.rear {
+    bottom: 30px;
+}
+
+/* Scanning Effect */
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #2ed573;
+    box-shadow: 0 0 15px #2ed573, 0 0 30px #2ed573;
+    animation: scan 3s ease-in-out infinite;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+@keyframes scan {
+
+    0%,
+    100% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Status Indicators (Hotspots) */
+.status-point {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #ff4757;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff4757;
+    animation: pulse 1s infinite;
+    display: none;
+    /* Hidden by default */
+}
+
+.status-point.active {
+    display: block;
+}
+
+/* Edit Button */
+.edit-vehicle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+    width: 40px;
     width: 20px;
     height: 20px;
     background: #555;
