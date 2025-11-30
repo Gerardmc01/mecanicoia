@@ -598,45 +598,16 @@ function loadVehicleDashboard(index) {
     // Load History (if any)
     loadHistoryList(vehicle);
 
-    // Update Visuals (Image or 3D Model)
+    // Update Visuals (ALWAYS SHOW CUPRA 3D)
     const visualContainer = document.querySelector('.visual-car-container');
 
-    if (vehicle.sketchfabId) {
-        // Render Sketchfab Embed
-        visualContainer.innerHTML = `
-            <iframe title="Sketchfab Model" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${vehicle.sketchfabId}/embed?autostart=1&ui_theme=dark" style="width: 100%; height: 100%; border: none;"></iframe>
-        `;
-        // Remove styling that might interfere
-        visualContainer.style.background = 'transparent';
-        visualContainer.style.border = 'none';
-    } else {
-        // Reset container style
-        visualContainer.style.background = 'radial-gradient(circle, #2d3436 0%, #000000 100%)';
-        visualContainer.style.border = '1px solid #444';
-
-        // Render Image
-        const typeImages = {
-            'suv': 'default_car_realistic.png',
-            'sedan': 'car_sedan.png',
-            'hatchback': 'car_hatchback.png',
-            'sport': 'car_sport.png'
-        };
-        const imageSrc = typeImages[vehicle.type] || 'default_car_realistic.png';
-
-        visualContainer.innerHTML = `
-            <img id="visualCarImage" src="${imageSrc}" alt="Tu Coche" 
-                 style="max-width: 90%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: all 0.5s ease;">
-            
-            <div class="status-point" id="point-oil" style="top: 40%; left: 70%;"></div>
-            <div class="status-point" id="point-battery" style="top: 40%; left: 20%;"></div>
-            <div class="status-point" id="point-tires" style="bottom: 25%; left: 25%;"></div>
-            <div class="status-point" id="point-tires-2" style="bottom: 25%; left: 75%;"></div>
-
-            <div style="position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.5); font-family: monospace; font-size: 0.7rem;">
-                VISTA: STUDIO 3D
-            </div>
-        `;
-    }
+    // Render Sketchfab Embed (Cupra Formentor)
+    visualContainer.innerHTML = `
+        <iframe title="Cupra Formentor 2021" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fbb89efad34e4e7983234f7c95742413/embed?autostart=1&ui_theme=dark" style="width: 100%; height: 100%; border: none;"></iframe>
+    `;
+    // Remove styling that might interfere
+    visualContainer.style.background = 'transparent';
+    visualContainer.style.border = 'none';
 
     // Reset Visual Car (only relevant for image mode, but harmless)
     resetVisualCar();
@@ -849,7 +820,6 @@ function handleAddVehicle(e) {
     const year = document.getElementById('vehicleYear').value;
     const mileage = document.getElementById('vehicleMileage').value;
     const type = document.getElementById('vehicleType').value;
-    const sketchfabId = document.getElementById('vehicleSketchfabId').value;
 
     // Simulate AI Generation Experience
     closeModal('vehicleModal');
@@ -862,7 +832,7 @@ function handleAddVehicle(e) {
     dashboard.style.display = 'grid'; // Show dashboard immediately to show the "Generating" effect
 
     // Create temporary vehicle for display
-    const tempVehicle = { brand, model, year, mileage, type, sketchfabId, history: [] };
+    const tempVehicle = { brand, model, year, mileage, type, history: [] };
 
     // Show "Generating..." overlay
     const visualContainer = document.querySelector('.visual-car-container');
@@ -908,7 +878,6 @@ function openEditVehicleModal() {
     document.getElementById('editVehicleYear').value = vehicle.year;
     document.getElementById('editVehicleMileage').value = vehicle.mileage;
     document.getElementById('editVehicleType').value = vehicle.type || 'suv';
-    document.getElementById('editVehicleSketchfabId').value = vehicle.sketchfabId || '';
 
     openModal('editVehicleModal');
 }
@@ -922,7 +891,6 @@ function handleEditVehicle(e) {
     const year = document.getElementById('editVehicleYear').value;
     const mileage = document.getElementById('editVehicleMileage').value;
     const type = document.getElementById('editVehicleType').value;
-    const sketchfabId = document.getElementById('editVehicleSketchfabId').value;
 
     if (state.userVehicles[id]) {
         state.userVehicles[id] = {
@@ -931,8 +899,7 @@ function handleEditVehicle(e) {
             model,
             year,
             mileage,
-            type,
-            sketchfabId
+            type
         };
 
         localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
