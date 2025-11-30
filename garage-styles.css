@@ -13,9 +13,10 @@
 }
 
 .visual-car-container {
+    height: 500px;
     background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
     position: relative;
     display: flex;
     justify-content: center;
