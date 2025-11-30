@@ -209,9 +209,8 @@ async function sendChatMessage() {
     const typingIndicator = addTypingIndicator();
 
     try {
-        // CONFIGURACIÓN: Cambia esta URL por la de tu Cloudflare Worker
-        // Ejemplo: 'https://mecanico-ia-api.TU-USUARIO.workers.dev'
-        const API_URL = 'https://mecanico-ia-api.YOUR-SUBDOMAIN.workers.dev';
+        // CONFIGURACIÓN: URL del Cloudflare Worker con Gemini API
+        const API_URL = 'https://mecanico-ia-api.gery-mc01.workers.dev';
 
         // Si la URL aún no está configurada, usar fallback local
         if (API_URL.includes('YOUR-SUBDOMAIN')) {
