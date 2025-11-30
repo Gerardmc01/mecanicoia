@@ -598,10 +598,18 @@ function loadVehicleDashboard(index) {
     // Load History (if any)
     loadHistoryList(vehicle);
 
-    // Update Image
+    // Update Image based on Type
     const carImage = document.getElementById('visualCarImage');
     if (carImage) {
-        carImage.src = vehicle.image || 'default_car_realistic.png';
+        const typeImages = {
+            'suv': 'default_car_realistic.png', // The SUV image
+            'sedan': 'car_sedan.png',
+            'hatchback': 'car_hatchback.png',
+            'sport': 'car_sport.png'
+        };
+        // Default to SUV if type is missing or invalid
+        const imageSrc = typeImages[vehicle.type] || 'default_car_realistic.png';
+        carImage.src = imageSrc;
     }
 
     // Reset Visual Car
@@ -814,7 +822,7 @@ function handleAddVehicle(e) {
     const model = document.getElementById('vehicleModel').value;
     const year = document.getElementById('vehicleYear').value;
     const mileage = document.getElementById('vehicleMileage').value;
-    const image = document.getElementById('vehicleImage').value;
+    const type = document.getElementById('vehicleType').value;
 
     // Simulate AI Generation Experience
     closeModal('vehicleModal');
@@ -827,7 +835,7 @@ function handleAddVehicle(e) {
     dashboard.style.display = 'grid'; // Show dashboard immediately to show the "Generating" effect
 
     // Create temporary vehicle for display
-    const tempVehicle = { brand, model, year, mileage, image: image || 'default_car_realistic.png', history: [] };
+    const tempVehicle = { brand, model, year, mileage, type, history: [] };
 
     // Show "Generating..." overlay
     const visualContainer = document.querySelector('.visual-car-container');
@@ -872,7 +880,7 @@ function openEditVehicleModal() {
     document.getElementById('editVehicleModel').value = vehicle.model;
     document.getElementById('editVehicleYear').value = vehicle.year;
     document.getElementById('editVehicleMileage').value = vehicle.mileage;
-    document.getElementById('editVehicleImage').value = vehicle.image || '';
+    document.getElementById('editVehicleType').value = vehicle.type || 'suv';
 
     openModal('editVehicleModal');
 }
@@ -885,7 +893,7 @@ function handleEditVehicle(e) {
     const model = document.getElementById('editVehicleModel').value;
     const year = document.getElementById('editVehicleYear').value;
     const mileage = document.getElementById('editVehicleMileage').value;
-    const image = document.getElementById('editVehicleImage').value;
+    const type = document.getElementById('editVehicleType').value;
 
     if (state.userVehicles[id]) {
         state.userVehicles[id] = {
@@ -894,7 +902,7 @@ function handleEditVehicle(e) {
             model,
             year,
             mileage,
-            image
+            type
         };
 
         localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
