@@ -918,12 +918,36 @@ function handleEditVehicle(e) {
     }
 }
 
+function handleDeleteVehicle() {
+    const id = document.getElementById('editVehicleId').value;
+
+    if (confirm('¿Estás seguro de que quieres eliminar este vehículo? Esta acción no se puede deshacer.')) {
+        state.userVehicles.splice(id, 1);
+        localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
+
+        closeModal('editVehicleModal');
+        loadUserVehicles();
+
+        // Reset view
+        document.getElementById('garageDashboard').style.display = 'none';
+        document.getElementById('garageEmptyState').style.display = 'block';
+
+        // Reset selector
+        const select = document.getElementById('garageVehicleSelect');
+        if (select) select.value = "";
+    }
+}
+
 // Make functions global for onclick events
 window.simulateAction = simulateAction;
 window.toggleMaintenance = function (el) {
     el.classList.toggle('checked');
-    // Here you would save the maintenance record
 };
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.handleAddLog = handleAddLog;
+window.openEditVehicleModal = openEditVehicleModal;
+window.handleDeleteVehicle = handleDeleteVehicle;
 // ============================================
 // MODAL MANAGEMENT
 // ============================================
