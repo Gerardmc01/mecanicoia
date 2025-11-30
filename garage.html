@@ -125,42 +125,26 @@
 
                 <!-- Right Column: Maintenance & History -->
                 <div class="garage-controls">
-                    <div class="garage-tabs">
-                        <button class="garage-tab active" data-tab="maintenance">Mantenimiento</button>
-                        <button class="garage-tab" data-tab="history">Bitácora / Historial</button>
-                    </div>
-
-                    <!-- Maintenance Tab -->
-                    <div id="tab-maintenance" class="tab-content">
-                        <div class="maintenance-card">
-                            <h3 style="margin-bottom: 1rem;">Estado del Mantenimiento</h3>
-                            <div id="maintenanceList">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <div class="maintenance-card" style="margin-top: 1rem;">
-                            <h3 style="margin-bottom: 1rem;">Simulación Visual</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('oil')">🛢️ Ver
-                                    Aceite</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('lights')">💡 Probar
-                                    Luces</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('tires')">🛞 Ver
-                                    Ruedas</button>
-                                <button class="btn btn-sm btn-secondary" onclick="simulateAction('battery')">🔋 Test
-                                    Batería</button>
-                            </div>
+                    <!-- Maintenance Section -->
+                    <div class="maintenance-card">
+                        <h3 style="margin-bottom: 1rem;">📋 Estado del Mantenimiento</h3>
+                        <div id="maintenanceList">
+                            <!-- Populated by JS -->
                         </div>
                     </div>
 
-                    <!-- History Tab -->
-                    <div id="tab-history" class="tab-content" style="display: none;">
-                        <div class="maintenance-card">
-                            <h3 style="margin-bottom: 1rem;">Bitácora del Vehículo</h3>
-                            <div id="historyList" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
-                                <!-- Populated by JS -->
-                            </div>
+                    <!-- History Section -->
+                    <div class="maintenance-card" style="margin-top: 1.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0;">📝 Historial de Mantenimiento</h3>
+                            <button class="btn btn-sm btn-primary" onclick="openModal('logModal')"
+                                style="font-size: 0.85rem;">
+                                ➕ Añadir Registro
+                            </button>
+                        </div>
+                        <div id="historyList" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Populated by JS -->
                         </div>
                     </div>
                 </div>

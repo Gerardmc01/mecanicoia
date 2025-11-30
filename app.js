@@ -578,6 +578,12 @@ function loadUserVehicles() {
             dashboard.style.display = 'none';
         }
     });
+
+    // AUTO-LOAD FIRST VEHICLE
+    if (state.userVehicles.length > 0) {
+        select.value = 0;
+        loadVehicleDashboard(0);
+    }
 }
 
 function loadVehicleDashboard(index) {
@@ -652,20 +658,12 @@ function loadHistoryList(vehicle) {
     const list = document.getElementById('historyList');
     list.innerHTML = '';
 
-    // Add "Add Log" Button
-    const addBtn = document.createElement('button');
-    addBtn.className = 'btn btn-sm btn-primary';
-    addBtn.style.width = '100%';
-    addBtn.style.marginBottom = '1rem';
-    addBtn.textContent = '➕ Añadir Registro (Bitácora)';
-    addBtn.onclick = () => openModal('logModal');
-    list.appendChild(addBtn);
-
     if (!vehicle.history || vehicle.history.length === 0) {
         const empty = document.createElement('p');
         empty.style.color = 'var(--text-muted)';
         empty.style.textAlign = 'center';
-        empty.textContent = 'No hay registros. ¡Añade el primero!';
+        empty.style.padding = '2rem 0';
+        empty.textContent = 'No hay registros. ¡Añade el primero usando el botón de arriba!';
         list.appendChild(empty);
         return;
     }
