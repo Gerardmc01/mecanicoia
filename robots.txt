@@ -1,12 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://mecanicoia.onrender.com/sitemap.xml
-
-# Optimizado para rastreo rápido
-Crawl-delay: 0
-
-# Permitir todos los recursos
-Allow: /styles.css
-Allow: /app.js
-Allow: /data.js
+Sitemap: https://mecanicoia.com/sitemap.xml
