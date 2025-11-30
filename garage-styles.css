@@ -171,10 +171,19 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-secondary);
     width: 40px;
-    width: 20px;
-    height: 20px;
-    background: #555;
-    border-radius: 50%;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-vehicle-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 .car-status-indicators {
@@ -273,4 +282,50 @@
 .garage-tab.active {
     color: var(--primary);
     border-bottom: 2px solid var(--primary);
+}
+
+/* === Garage Mobile Responsive === */
+@media (max-width: 768px) {
+    .garage-dashboard {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .visual-car-container {
+        height: 350px;
+    }
+
+    .garage-controls {
+        gap: var(--spacing-md);
+    }
+
+    .maintenance-card {
+        padding: var(--spacing-md);
+    }
+
+    .maintenance-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .visual-car-container {
+        height: 280px;
+    }
+
+    .garage-tabs {
+        flex-wrap: wrap;
+    }
+
+    .garage-tab {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .maintenance-card h3 {
+        font-size: 1rem;
+    }
 }
