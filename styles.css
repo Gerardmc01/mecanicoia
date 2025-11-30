@@ -204,7 +204,8 @@ body {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: 80px;
+    padding-top: 120px;
+    /* Increased from 80px for better spacing from navbar */
     overflow: hidden;
 }
 

@@ -909,21 +909,19 @@ function handleEditVehicle(e) {
             ...state.userVehicles[id],
             brand,
             model,
-            year,
-            mileage,
+            year: parseInt(year),
+            mileage: parseInt(mileage),
             type
         };
 
         localStorage.setItem('userVehicles', JSON.stringify(state.userVehicles));
 
+        closeModal('editVehicleModal');
+
         loadUserVehicles();
 
-        // Reselect current vehicle to update UI
-        const select = document.getElementById('garageVehicleSelect');
-        select.value = id;
-        select.dispatchEvent(new Event('change'));
-
-        closeModal('editVehicleModal');
+        // Force reload dashboard with updated data
+        loadVehicleDashboard(id);
     }
 }
 
@@ -1112,7 +1110,7 @@ function setupEventListeners() {
             document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
 
             tab.classList.add('active');
-            document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+            document.getElementById(`tab - ${tab.dataset.tab} `).style.display = 'block';
         });
     });
 }
