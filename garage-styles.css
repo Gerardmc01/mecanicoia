@@ -39,6 +39,16 @@
     transform: perspective(500px) rotateX(60deg);
     animation: gridMove 20s linear infinite;
     top: -50%;
+    pointer-events: none;
+    /* CRITICAL: Allows clicks to pass through to the 3D model */
+    z-index: 1;
+}
+
+.visual-car-container iframe,
+.visual-car-container img {
+    position: relative;
+    z-index: 10;
+    /* Ensure car/model is above the grid */
 }
 
 @keyframes gridMove {

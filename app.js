@@ -603,7 +603,7 @@ function loadVehicleDashboard(index) {
 
     // Render Sketchfab Embed (Cupra Formentor)
     visualContainer.innerHTML = `
-        <iframe title="Cupra Formentor 2021" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fbb89efad34e4e7983234f7c95742413/embed?autostart=1&ui_theme=dark&transparent=1" style="width: 100%; height: 100%; border: none; pointer-events: auto;"></iframe>
+        <iframe title="Cupra Formentor 2021" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/fbb89efad34e4e7983234f7c95742413/embed?autostart=1&ui_theme=dark&transparent=1" style="width: 100%; height: 100%; border: none; pointer-events: auto; position: relative; z-index: 20;"></iframe>
     `;
     // Remove styling that might interfere
     visualContainer.style.background = 'transparent';
