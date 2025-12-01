@@ -1009,3 +1009,128 @@ window.clearChatHistory = function () {
     }
 };
 
+// ============================================
+// EXPORT TO PDF FUNCTION
+// ============================================
+window.exportChatToPDF = function () {
+    const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages || state.chatHistory.length === 0) {
+        alert('No hay conversación para exportar');
+        return;
+    }
+
+    // Crear contenido del PDF
+    let pdfContent = `DIAGNÓSTICO MECÁNICO IA 24/7\n`;
+    pdfContent += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n`;
+    pdfContent += `\n${'='.repeat(50)}\n\n`;
+
+    state.chatHistory.forEach((msg, index) => {
+        const role = msg.role === 'user' ? 'TÚ' : 'MECÁNICO IA';
+        pdfContent += `${role}:\n${msg.content}\n\n`;
+    });
+
+    pdfContent += `${'='.repeat(50)}\n`;
+    pdfContent += `\nGenerado por Mecánico IA 24/7\n`;
+    pdfContent += `https://mecanicoia.com\n`;
+
+    // Crear blob y descargar
+    const blob = new Blob([pdfContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `diagnostico-mecanico-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('✅ Diagnóstico exportado correctamente');
+};
+
+// ============================================
+// SHARE TO WHATSAPP FUNCTION
+// ============================================
+window.shareChatToWhatsApp = function () {
+    if (state.chatHistory.length === 0) {
+        alert('No hay conversación para compartir');
+        return;
+    }
+
+    // Crear resumen para WhatsApp
+    let summary = `🔧 *Diagnóstico Mecánico IA*\n\n`;
+
+    // Tomar solo los últimos 4 mensajes para no hacer el mensaje muy largo
+    const recentMessages = state.chatHistory.slice(-4);
+    recentMessages.forEach((msg) => {
+        const role = msg.role === 'user' ? '👤 Yo' : '🔧 Mecánico';
+        summary += `*${role}:*\n${msg.content.substring(0, 200)}${msg.content.length > 200 ? '...' : ''}\n\n`;
+    });
+
+    summary += `_Diagnóstico completo en: https://mecanicoia.com_`;
+
+    // Codificar para URL
+    const encodedText = encodeURIComponent(summary);
+    const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+
+    // Abrir WhatsApp
+    window.open(whatsappUrl, '_blank');
+};
+
+// ============================================
+// PWA SERVICE WORKER REGISTRATION
+// ============================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('✅ Service Worker registrado:', registration.scope);
+            })
+            .catch((error) => {
+                console.log('❌ Error al registrar Service Worker:', error);
+            });
+    });
+}
+
+// ============================================
+// INSTALL PWA PROMPT
+// ============================================
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Mostrar botón de instalación si existe
+    const installButton = document.getElementById('installPWA');
+    if (installButton) {
+        installButton.style.display = 'block';
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} instalar la app`);
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            }
+        });
+    }
+});
+
+// ============================================
+// ANALYTICS (Google Analytics 4)
+// ============================================
+window.trackEvent = function (eventName, eventParams = {}) {
+    if (typeof gtag !== 'undefined') {
+        gtag('event', eventName, eventParams);
+    }
+};
+
+// Track chat interactions
+const originalSendChatMessage = window.sendChatMessage;
+window.sendChatMessage = function () {
+    trackEvent('chat_message_sent', {
+        'event_category': 'engagement',
+        'event_label': 'user_query'
+    });
+    return originalSendChatMessage.apply(this, arguments);
+};

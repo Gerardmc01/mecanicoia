@@ -22,6 +22,13 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2ed573">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mecánico IA">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mecanicoia.onrender.com">
@@ -94,6 +101,15 @@
         }
       ]
     }
+    </script>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
     </script>
 
     <link rel="stylesheet" href="styles.css">
@@ -250,10 +266,20 @@
                         <p class="module-subtitle">Cuéntame qué le pasa a tu coche y te ayudaré a identificar el
                             problema</p>
                     </div>
-                    <button onclick="clearChatHistory()" class="btn btn-secondary"
-                        style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                        🗑️ Limpiar Chat
-                    </button>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="exportChatToPDF()" class="btn btn-secondary"
+                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Exportar diagnóstico">
+                            📄 Exportar
+                        </button>
+                        <button onclick="shareChatToWhatsApp()" class="btn btn-secondary"
+                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Compartir por WhatsApp">
+                            📱 Compartir
+                        </button>
+                        <button onclick="clearChatHistory()" class="btn btn-secondary"
+                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Limpiar conversación">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="diagnostic-container">
