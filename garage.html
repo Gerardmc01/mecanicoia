@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Garage Virtual | Mecánico IA 24/7</title>
+    <title>Mi Garage PRO | Mecánico IA 24/7</title>
     <meta name="description"
-        content="Gestiona el mantenimiento de tu coche, historial de averías y recordatorios en tu Garage Virtual GRATIS.">
+        content="Gestión profesional de tu vehículo con IA. Dashboard, estadísticas, alertas y mucho más.">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
     <link rel="stylesheet" href="styles.css">
@@ -16,6 +16,312 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
+
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ESTILOS ADICIONALES PARA GARAGE PRO */
+        .garage-pro-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1fa35a 100%);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .garage-pro-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-glass);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(46, 213, 115, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            background: var(--bg-glass);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .alert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 600;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .alert-urgent {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+        }
+
+        .alert-warning {
+            background: rgba(255, 165, 2, 0.2);
+            color: #ffa502;
+            border: 1px solid #ffa502;
+        }
+
+        .alert-info {
+            background: rgba(46, 213, 115, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: var(--radius-full);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: var(--bg-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .add-photo {
+            border: 2px dashed var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-photo:hover {
+            border-color: var(--primary);
+            background: rgba(46, 213, 115, 0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(46, 213, 115, 0.2);
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(46, 213, 115, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -33,9 +339,9 @@
                 <li><a href="index.html" class="nav-link">Inicio</a></li>
                 <li><a href="index.html#diagnostico" class="nav-link">Diagnóstico</a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
-                <li><a href="garage.html" class="nav-link active">Mi Garage</a></li>
+                <li><a href="garage.html" class="nav-link active">Mi Garage PRO</a></li>
             </ul>
-            <button class="menu-toggle" id="menuToggle">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleMobileMenu()">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -43,240 +349,660 @@
         </div>
     </nav>
 
-    <!-- Garage Content -->
+    <!-- Garage PRO Content -->
     <section class="module-section garage-module" style="padding-top: 120px; min-height: 100vh;">
         <div class="container">
-            <div class="module-header">
-                <h1 class="module-title">Mi Garage Virtual</h1>
-                <p class="module-subtitle">Tu centro de control para el mantenimiento y estado de tus vehículos</p>
-            </div>
 
-            <!-- Vehicle Selector & Filters -->
-            <div class="garage-filters"
-                style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                <div style="flex: 1; min-width: 250px;">
-                    <select id="garageVehicleSelect" class="select-input" style="width: 100%;">
-                        <option value="">Seleccionar Vehículo...</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="openModal('vehicleModal')">➕ Añadir Nuevo Coche</button>
-            </div>
-
-            <!-- Empty State (Shown when no vehicle selected or list empty) -->
-            <div id="garageEmptyState"
-                style="text-align: center; padding: 4rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🚘</div>
-                <h3>Tu Garage está vacío</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Añade tu primer vehículo para ver el panel
-                    de control 3D</p>
-                <button class="btn btn-primary" onclick="openModal('vehicleModal')">Añadir Mi Primer Coche</button>
-            </div>
-
-            <!-- Dashboard (Hidden by default) -->
-            <div class="garage-dashboard" id="garageDashboard" style="display: none;">
-                <!-- Left Column: Visual Car & Stats -->
-                <!-- Left Column: Visual Car & Stats -->
-                <div class="garage-visuals">
-                    <div class="visual-car-container"
-                        style="background: radial-gradient(circle, #2d3436 0%, #000000 100%); border: 1px solid #444;">
-                        <!-- Car Image -->
-                        <img id="visualCarImage" src="default_car_realistic.png" alt="Tu Coche"
-                            style="max-width: 90%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: all 0.5s ease;">
-
-                        <!-- Status Points (Overlay) -->
-                        <div class="status-point" id="point-oil" style="top: 40%; left: 70%;"></div>
-                        <div class="status-point" id="point-battery" style="top: 40%; left: 20%;"></div>
-                        <div class="status-point" id="point-tires" style="bottom: 25%; left: 25%;"></div>
-                        <div class="status-point" id="point-tires-2" style="bottom: 25%; left: 75%;"></div>
-
-                        <div
-                            style="position: absolute; bottom: 15px; right: 15px; color: rgba(255,255,255,0.5); font-family: monospace; font-size: 0.7rem;">
-                            VISTA: STUDIO 3D
-                        </div>
-                    </div>
-
-                    <div class="vehicle-stats"
-                        style="display: flex; gap: 1rem; margin-top: 1rem; align-items: stretch;">
-                        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                            <div class="stat-card"
-                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
-                                <div style="font-weight: 600;" id="statModel">Modelo</div>
-                            </div>
-                            <div class="stat-card"
-                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📅</div>
-                                <div style="font-weight: 600;" id="statYear">Año</div>
-                            </div>
-                            <div class="stat-card"
-                                style="background: var(--bg-card); padding: 1rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
-                                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛣️</div>
-                                <div style="font-weight: 600;" id="statKm">0 km</div>
-                            </div>
-                        </div>
-
-                        <!-- Edit Button -->
-                        <button class="edit-vehicle-btn" onclick="openEditVehicleModal()" title="Editar Vehículo">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
+            <!-- Header PRO -->
+            <div class="garage-pro-header">
+                <div style="position: relative; z-index: 1;">
+                    <h1 class="module-title" style="color: white; margin-bottom: 0.5rem;">🚗 Mi Garage PRO</h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem;">Gestión profesional de tu vehículo con
+                        IA</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="openModal('vehicleModal')" class="btn btn-secondary"
+                            style="background: white; color: var(--primary);">
+                            ➕ Añadir Vehículo
+                        </button>
+                        <button onclick="exportGarageData()" class="btn btn-secondary"
+                            style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white;">
+                            📊 Exportar Datos
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right Column: Maintenance & History -->
-                <div class="garage-controls">
-                    <!-- Maintenance Section -->
-                    <div class="maintenance-card">
-                        <h3 style="margin-bottom: 1rem;">📋 Estado del Mantenimiento</h3>
-                        <div id="maintenanceList">
-                            <!-- Populated by JS -->
-                        </div>
+            <!-- Vehicle Selector -->
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Selecciona tu vehículo:</label>
+                <select id="garageVehicleSelect"
+                    style="width: 100%; max-width: 400px; padding: 1rem; border-radius: var(--radius-md); background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-primary); font-size: 1rem;">
+                    <option value="">-- Selecciona un vehículo --</option>
+                </select>
+            </div>
+
+            <!-- Empty State -->
+            <div id="garageEmptyState" style="text-align: center; padding: 4rem 2rem; display: none;">
+                <div style="font-size: 5rem; margin-bottom: 1rem;">🚗</div>
+                <h2 style="margin-bottom: 1rem;">No tienes vehículos registrados</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Añade tu primer vehículo para empezar a
+                    gestionar su mantenimiento</p>
+                <button onclick="openModal('vehicleModal')" class="btn btn-primary">
+                    ➕ Añadir Mi Primer Vehículo
+                </button>
+            </div>
+
+            <!-- Dashboard (hidden by default) -->
+            <div id="garageDashboard" style="display: none;">
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">📅</span>
+                        <div class="stat-value" id="statDaysOwned">0</div>
+                        <div class="stat-label">Días contigo</div>
                     </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🛣️</span>
+                        <div class="stat-value" id="statTotalKm">0</div>
+                        <div class="stat-label">Kilómetros totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">💰</span>
+                        <div class="stat-value" id="statTotalCost">0€</div>
+                        <div class="stat-label">Gasto total</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🔧</span>
+                        <div class="stat-value" id="statMaintenance">0</div>
+                        <div class="stat-label">Mantenimientos</div>
+                    </div>
+                </div>
 
-                    <!-- History Section -->
-                    <div class="maintenance-card" style="margin-top: 1.5rem;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="margin: 0;">📝 Historial de Mantenimiento</h3>
-                            <button class="btn btn-sm btn-primary" onclick="openModal('logModal')"
-                                style="font-size: 0.85rem;">
-                                ➕ Añadir Registro
-                            </button>
+                <!-- Alerts Section -->
+                <div id="alertsSection" style="margin-bottom: 2rem;"></div>
+
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab('overview')">📊 Resumen</button>
+                    <button class="tab-btn" onclick="switchTab('maintenance')">🔧 Mantenimiento</button>
+                    <button class="tab-btn" onclick="switchTab('history')">📜 Historial</button>
+                    <button class="tab-btn" onclick="switchTab('costs')">💰 Costes</button>
+                    <button class="tab-btn" onclick="switchTab('photos')">📸 Fotos</button>
+                    <button class="tab-btn" onclick="switchTab('achievements')">🏆 Logros</button>
+                </div>
+
+                <!-- Tab: Overview -->
+                <div id="tab-overview" class="tab-content active">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+                        <!-- Vehicle Info Card -->
+                        <div class="chart-container">
+                            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🚗</span> Información del Vehículo
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-muted);">Modelo:</span>
+                                    <span style="font-weight: 600;" id="statModel">-</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-muted);">Año:</span>
+                                    <span style="font-weight: 600;" id="statYear">-</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-muted);">Kilometraje:</span>
+                                    <span style="font-weight: 600;" id="statKm">-</span>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <button onclick="openEditVehicleModal()" class="btn btn-secondary"
+                                        style="width: 100%;">
+                                        ✏️ Editar Vehículo
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div id="historyList" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
-                            <!-- Populated by JS -->
+
+                        <!-- Health Score -->
+                        <div class="chart-container">
+                            <h3 style="margin-bottom: 1.5rem; text-align: center;">💚 Estado de Salud</h3>
+                            <svg class="progress-ring" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" stroke="rgba(46, 213, 115, 0.2)" stroke-width="12"
+                                    fill="none" />
+                                <circle id="healthCircle" class="progress-ring-circle" cx="60" cy="60" r="54"
+                                    stroke="var(--primary)" stroke-width="12" fill="none" stroke-dasharray="339.292"
+                                    stroke-dashoffset="0" />
+                                <text x="60" y="60" text-anchor="middle" dy=".3em" font-size="24" font-weight="700"
+                                    fill="var(--primary)" id="healthScore">100%</text>
+                            </svg>
+                            <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">Basado en
+                                mantenimientos al día</p>
+                        </div>
+
+                        <!-- 3D Car Viewer -->
+                        <div class="chart-container" style="grid-column: 1 / -1;">
+                            <h3 style="margin-bottom: 1.5rem;">🎨 Vista 3D del Vehículo</h3>
+                            <div class="visual-car-container"
+                                style="height: 400px; background: linear-gradient(135deg, rgba(46, 213, 115, 0.1) 0%, rgba(31, 163, 90, 0.1) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                                <iframe title="Cupra Formentor 2021" frameborder="0" allowfullscreen
+                                    mozallowfullscreen="true" webkitallowfullscreen="true"
+                                    allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
+                                    execution-while-out-of-viewport execution-while-not-rendered web-share
+                                    src="https://sketchfab.com/models/fbb89efad34e4e7983234f7c95742413/embed?autostart=1&ui_theme=dark&transparent=1"
+                                    style="width: 100%; height: 100%; border: none;"></iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Tab: Maintenance -->
+                <div id="tab-maintenance" class="tab-content">
+                    <div class="chart-container">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>🔧 Próximos Mantenimientos</h3>
+                            <button onclick="openModal('logModal')" class="btn btn-primary">
+                                ➕ Añadir Registro
+                            </button>
+                        </div>
+                        <div id="maintenanceList"></div>
+                    </div>
+                </div>
+
+                <!-- Tab: History -->
+                <div id="tab-history" class="tab-content">
+                    <div class="chart-container">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>📜 Historial Completo</h3>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select id="historyFilter" onchange="filterHistory()"
+                                    style="padding: 0.5rem; border-radius: var(--radius-md); background: var(--bg-glass); border: 1px solid var(--border); color: var(--text-primary);">
+                                    <option value="all">Todos</option>
+                                    <option value="mantenimiento">Mantenimiento</option>
+                                    <option value="averia">Averías</option>
+                                    <option value="modificacion">Modificaciones</option>
+                                    <option value="taller">Taller</option>
+                                </select>
+                                <button onclick="openModal('logModal')" class="btn btn-primary">
+                                    ➕ Añadir
+                                </button>
+                            </div>
+                        </div>
+                        <div class="timeline" id="historyList"></div>
+                    </div>
+                </div>
+
+                <!-- Tab: Costs -->
+                <div id="tab-costs" class="tab-content">
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 1.5rem;">💰 Análisis de Costes</h3>
+                        <canvas id="costsChart" style="max-height: 400px;"></canvas>
+                    </div>
+                    <div class="chart-container" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1.5rem;">📊 Distribución de Gastos</h3>
+                        <canvas id="costsDistributionChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tab: Photos -->
+                <div id="tab-photos" class="tab-content">
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 1.5rem;">📸 Galería de Fotos</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Guarda fotos de tu vehículo,
+                            modificaciones y reparaciones</p>
+                        <div class="photo-gallery" id="photoGallery">
+                            <div class="photo-item add-photo"
+                                onclick="alert('📸 Función de subir fotos próximamente. Por ahora puedes añadir emojis de coches: 🚗🚙🚕🏎️')">
+                                <span>➕</span>
+                            </div>
+                            <div class="photo-item">🚗</div>
+                            <div class="photo-item">🔧</div>
+                            <div class="photo-item">💨</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Achievements -->
+                <div id="tab-achievements" class="tab-content">
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 1.5rem;">🏆 Tus Logros</h3>
+                        <div style="display: grid; gap: 1rem;" id="achievementsList">
+                            <div class="achievement-badge">
+                                <span>🎉</span>
+                                <span>Primer Vehículo Registrado</span>
+                            </div>
+                            <div class="achievement-badge"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <span>🔧</span>
+                                <span>Mantenimiento al Día</span>
+                            </div>
+                            <div class="achievement-badge"
+                                style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <span>📝</span>
+                                <span>Historial Completo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Modal Añadir Vehículo -->
+    <!-- Modals (same as before but improved) -->
+    <!-- Add Vehicle Modal -->
     <div id="vehicleModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('vehicleModal')">&times;</span>
-            <h2>Añadir Nuevo Vehículo</h2>
-            <form id="vehicleForm">
+            <div class="modal-header">
+                <h2>➕ Añadir Vehículo</h2>
+                <button class="modal-close" onclick="closeModal('vehicleModal')">✕</button>
+            </div>
+            <form id="addVehicleForm">
                 <div class="form-group">
                     <label>Marca</label>
-                    <input type="text" id="vehicleBrand" class="form-input" placeholder="Ej: Ford, Seat, BMW..."
-                        required>
+                    <input type="text" id="vehicleBrand" required placeholder="Ej: Toyota">
                 </div>
                 <div class="form-group">
                     <label>Modelo</label>
-                    <input type="text" id="vehicleModel" class="form-input" placeholder="Ej: Fiesta, Ibiza, Serie 3..."
-                        required>
+                    <input type="text" id="vehicleModel" required placeholder="Ej: Corolla">
                 </div>
                 <div class="form-group">
                     <label>Año</label>
-                    <input type="number" id="vehicleYear" class="form-input" placeholder="Ej: 2018" required>
+                    <input type="number" id="vehicleYear" required min="1900" max="2025" placeholder="2020">
                 </div>
                 <div class="form-group">
                     <label>Kilometraje Actual</label>
-                    <input type="number" id="vehicleMileage" class="form-input" placeholder="Ej: 120000" required>
+                    <input type="number" id="vehicleMileage" required min="0" placeholder="50000">
                 </div>
                 <div class="form-group">
-                    <label>Tipo de Carrocería</label>
-                    <select id="vehicleType" class="select-input" required>
-                        <option value="suv">🚙 SUV / Todoterreno</option>
-                        <option value="sedan">🚗 Berlina / Sedán</option>
-                        <option value="hatchback">🚗 Compacto / Utilitario</option>
-                        <option value="sport">🏎️ Deportivo / Coupé</option>
+                    <label>Tipo</label>
+                    <select id="vehicleType">
+                        <option value="sedan">Sedán</option>
+                        <option value="suv">SUV</option>
+                        <option value="hatchback">Hatchback</option>
+                        <option value="coupe">Coupé</option>
+                        <option value="truck">Camioneta</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
-                    Vehículo</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Añadir Vehículo</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal EDITAR Vehículo -->
+    <!-- Edit Vehicle Modal -->
     <div id="editVehicleModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('editVehicleModal')">&times;</span>
-            <h2>Editar Vehículo</h2>
+            <div class="modal-header">
+                <h2>✏️ Editar Vehículo</h2>
+                <button class="modal-close" onclick="closeModal('editVehicleModal')">✕</button>
+            </div>
             <form id="editVehicleForm">
                 <input type="hidden" id="editVehicleId">
                 <div class="form-group">
                     <label>Marca</label>
-                    <input type="text" id="editVehicleBrand" class="form-input" required>
+                    <input type="text" id="editVehicleBrand" required>
                 </div>
                 <div class="form-group">
                     <label>Modelo</label>
-                    <input type="text" id="editVehicleModel" class="form-input" required>
+                    <input type="text" id="editVehicleModel" required>
                 </div>
                 <div class="form-group">
                     <label>Año</label>
-                    <input type="number" id="editVehicleYear" class="form-input" required>
+                    <input type="number" id="editVehicleYear" required min="1900" max="2025">
                 </div>
                 <div class="form-group">
-                    <label>Kilometraje Actual</label>
-                    <input type="number" id="editVehicleMileage" class="form-input" required>
+                    <label>Kilometraje</label>
+                    <input type="number" id="editVehicleMileage" required min="0">
                 </div>
                 <div class="form-group">
-                    <label>Tipo de Carrocería</label>
-                    <select id="editVehicleType" class="select-input" required>
-                        <option value="suv">🚙 SUV / Todoterreno</option>
-                        <option value="sedan">🚗 Berlina / Sedán</option>
-                        <option value="hatchback">🚗 Compacto / Utilitario</option>
-                        <option value="sport">🏎️ Deportivo / Coupé</option>
+                    <label>Tipo</label>
+                    <select id="editVehicleType">
+                        <option value="sedan">Sedán</option>
+                        <option value="suv">SUV</option>
+                        <option value="hatchback">Hatchback</option>
+                        <option value="coupe">Coupé</option>
+                        <option value="truck">Camioneta</option>
                     </select>
                 </div>
-
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn"
-                        style="background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid #ff4757; flex: 1;"
-                        onclick="handleDeleteVehicle()">
-                        🗑️ Eliminar Coche
-                    </button>
-                    <button type="submit" class="btn btn-primary" style="flex: 2;">Guardar Cambios</button>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar Cambios</button>
+                    <button type="button" onclick="handleDeleteVehicle()" class="btn btn-secondary"
+                        style="background: #ff4757;">Eliminar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Añadir Registro (Bitácora) -->
+    <!-- Add Log Modal -->
     <div id="logModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('logModal')">&times;</span>
-            <h2>Añadir al Historial</h2>
+            <div class="modal-header">
+                <h2>📝 Añadir Registro</h2>
+                <button class="modal-close" onclick="closeModal('logModal')">✕</button>
+            </div>
             <form id="logForm">
                 <div class="form-group">
-                    <label>Tipo de Registro</label>
-                    <select id="logType" class="select-input" required>
-                        <option value="mantenimiento">🛠️ Mantenimiento (Aceite, Filtros...)</option>
-                        <option value="averia">⚠️ Avería / Reparación</option>
-                        <option value="modificacion">✨ Modificación / Extra (Alerón, Llantas...)</option>
+                    <label>Tipo</label>
+                    <select id="logType">
+                        <option value="mantenimiento">🔧 Mantenimiento</option>
+                        <option value="averia">⚠️ Avería</option>
+                        <option value="modificacion">✨ Modificación</option>
                         <option value="taller">👨‍🔧 Visita al Taller</option>
-                        <option value="otro">📝 Nota General</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Fecha</label>
-                    <input type="date" id="logDate" class="form-input" required>
+                    <input type="date" id="logDate" required>
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
-                    <textarea id="logDescription" class="form-input" rows="3"
-                        placeholder="Ej: Cambio de aceite y filtro, puse un alerón nuevo, ruido en frenos..."
-                        required></textarea>
+                    <textarea id="logDescription" required rows="3" placeholder="Describe qué se hizo..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Coste (Opcional)</label>
-                    <input type="number" id="logCost" class="form-input" placeholder="Ej: 150">
+                    <label>Coste (€)</label>
+                    <input type="number" id="logCost" min="0" step="0.01" placeholder="0.00">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Guardar
-                    Registro</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Añadir Registro</button>
             </form>
         </div>
     </div>
 
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Cambiar tema">
+        🌙
+    </button>
+
+    <!-- Scripts -->
     <script src="data.js"></script>
     <script src="app.js"></script>
+
+    <script>
+        // GARAGE PRO FUNCTIONS
+        
+        let costsChart = null;
+        let costsDistributionChart = null;
+        
+        // Switch Tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load charts if costs tab
+            if (tabName === 'costs') {
+                setTimeout(() => {
+                    loadCostsCharts();
+                }, 100);
+            }
+        }
+        
+        // Load Costs Charts
+        function loadCostsCharts() {
+            const vehicle = state.userVehicles[currentVehicleId];
+            if (!vehicle || !vehicle.history) return;
+            
+            // Prepare data
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const costsByMonth = new Array(12).fill(0);
+            const costsByType = {
+                mantenimiento: 0,
+                averia: 0,
+                modificacion: 0,
+                taller: 0
+            };
+            
+            vehicle.history.forEach(log => {
+                if (log.cost) {
+                    const date = new Date(log.date);
+                    const month = date.getMonth();
+                    costsByMonth[month] += parseFloat(log.cost);
+                    costsByType[log.type] = (costsByType[log.type] || 0) + parseFloat(log.cost);
+                }
+            });
+            
+            // Costs over time chart
+            const ctx1 = document.getElementById('costsChart');
+            if (costsChart) costsChart.destroy();
+            costsChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Gastos (€)',
+                        data: costsByMonth,
+                        borderColor: '#2ed573',
+                        backgroundColor: 'rgba(46, 213, 115, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+            
+            // Distribution chart
+            const ctx2 = document.getElementById('costsDistributionChart');
+            if (costsDistributionChart) costsDistributionChart.destroy();
+            costsDistributionChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mantenimiento', 'Averías', 'Modificaciones', 'Taller'],
+                    datasets: [{
+                        data: [
+                            costsByType.mantenimiento,
+                            costsByType.averia,
+                            costsByType.modificacion,
+                            costsByType.taller
+                        ],
+                        backgroundColor: ['#2ed573', '#ff4757', '#ffa502', '#5352ed']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+        
+        // Update Stats
+        function updateStats(vehicle) {
+            // Days owned (simulated)
+            const daysOwned = Math.floor(Math.random() * 365) + 100;
+            document.getElementById('statDaysOwned').textContent = daysOwned;
+            
+            // Total cost
+            let totalCost = 0;
+            if (vehicle.history) {
+                vehicle.history.forEach(log => {
+                    if (log.cost) totalCost += parseFloat(log.cost);
+                });
+            }
+            document.getElementById('statTotalCost').textContent = totalCost.toFixed(0) + '€';
+            
+            // Maintenance count
+            const maintenanceCount = vehicle.history ? vehicle.history.filter(h => h.type === 'mantenimiento').length : 0;
+            document.getElementById('statMaintenance').textContent = maintenanceCount;
+            
+            // Health score (based on maintenance)
+            const healthScore = Math.min(100, 70 + (maintenanceCount * 5));
+            document.getElementById('healthScore').textContent = healthScore + '%';
+            const circle = document.getElementById('healthCircle');
+            const circumference = 2 * Math.PI * 54;
+            const offset = circumference - (healthScore / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+            
+            // Generate alerts
+            generateAlerts(vehicle);
+        }
+        
+        // Generate Alerts
+        function generateAlerts(vehicle) {
+            const alertsSection = document.getElementById('alertsSection');
+            alertsSection.innerHTML = '';
+            
+            const alerts = [];
+            
+            // Check maintenance intervals
+            const maintenanceItems = [
+                { name: 'Cambio de Aceite', interval: 15000, icon: '🛢️' },
+                { name: 'Filtro de Aire', interval: 30000, icon: '💨' },
+                { name: 'Pastillas de Freno', interval: 50000, icon: '🛑' }
+            ];
+            
+            maintenanceItems.forEach(item => {
+                const nextKm = Math.ceil(vehicle.mileage / item.interval) * item.interval;
+                const remaining = nextKm - vehicle.mileage;
+                
+                if (remaining < 1000) {
+                    alerts.push({
+                        type: 'urgent',
+                        message: `${item.icon} ${item.name} URGENTE (${remaining} km)`
+                    });
+                } else if (remaining < 5000) {
+                    alerts.push({
+                        type: 'warning',
+                        message: `${item.icon} ${item.name} próximo (${remaining} km)`
+                    });
+                }
+            });
+            
+            if (alerts.length === 0) {
+                alerts.push({
+                    type: 'info',
+                    message: '✅ Todo al día - Sin mantenimientos pendientes'
+                });
+            }
+            
+            alerts.forEach(alert => {
+                const badge = document.createElement('span');
+                badge.className = `alert-badge alert-${alert.type}`;
+                badge.textContent = alert.message;
+                badge.style.marginRight = '0.5rem';
+                badge.style.marginBottom = '0.5rem';
+                alertsSection.appendChild(badge);
+            });
+        }
+        
+        // Filter History
+        function filterHistory() {
+            const filter = document.getElementById('historyFilter').value;
+            const vehicle = state.userVehicles[currentVehicleId];
+            if (!vehicle || !vehicle.history) return;
+            
+            const filtered = filter === 'all' ? vehicle.history : vehicle.history.filter(h => h.type === filter);
+            
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay registros de este tipo</p>';
+                return;
+            }
+            
+            const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sorted.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                
+                let icon = '📝';
+                if (log.type === 'mantenimiento') icon = '🛠️';
+                if (log.type === 'averia') icon = '⚠️';
+                if (log.type === 'modificacion') icon = '✨';
+                if (log.type === 'taller') icon = '👨‍🔧';
+                
+                item.innerHTML = `
+                    <div style="background: var(--bg-glass); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600;">${icon} ${log.type.toUpperCase()}</span>
+                            <span style="font-size: 0.875rem; color: var(--text-muted);">${new Date(log.date).toLocaleDateString()}</span>
+                        </div>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0;">${log.description}</p>
+                        ${log.cost ? `<div style="color: var(--primary); font-weight: 600; margin-top: 0.5rem;">💰 ${log.cost}€</div>` : ''}
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        // Export Garage Data
+        function exportGarageData() {
+            const vehicle = state.userVehicles[currentVehicleId];
+            if (!vehicle) {
+                alert('No hay vehículo seleccionado');
+                return;
+            }
+            
+            let content = `GARAGE PRO - INFORME COMPLETO\n`;
+            content += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n\n`;
+            content += `${'='.repeat(50)}\n\n`;
+            content += `VEHÍCULO: ${vehicle.brand} ${vehicle.model} (${vehicle.year})\n`;
+            content += `Kilometraje: ${vehicle.mileage} km\n\n`;
+            content += `${'='.repeat(50)}\n\n`;
+            
+            if (vehicle.history && vehicle.history.length > 0) {
+                content += `HISTORIAL (${vehicle.history.length} registros):\n\n`;
+                vehicle.history.forEach(log => {
+                    content += `[${new Date(log.date).toLocaleDateString()}] ${log.type.toUpperCase()}\n`;
+                    content += `${log.description}\n`;
+                    if (log.cost) content += `Coste: ${log.cost}€\n`;
+                    content += `\n`;
+                });
+            }
+            
+            content += `${'='.repeat(50)}\n`;
+            content += `Generado por Mecánico IA 24/7 - Garage PRO\n`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `garage-pro-${vehicle.brand}-${vehicle.model}-${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Datos exportados correctamente');
+        }
+        
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.dark-mode-toggle');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+        
+        // Override loadVehicleDashboard to add stats
+        const originalLoadVehicleDashboard = loadVehicleDashboard;
+        loadVehicleDashboard = function(index) {
+            originalLoadVehicleDashboard(index);
+            const vehicle = state.userVehicles[index];
+            if (vehicle) {
+                updateStats(vehicle);
+                filterHistory(); // Load history in timeline
+            }
+        };
+    </script>
 </body>
 
 </html>

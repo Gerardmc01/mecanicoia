@@ -4,17 +4,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog de Mecánica Automotriz | Guías, Trucos y Soluciones 2025</title>
+    <title>Blog de Mecánica y Mantenimiento | Mecánico IA 24/7</title>
     <meta name="description"
-        content="La Biblia de la mecánica. Guías definitivas sobre averías, mantenimiento, ITV y polémicas del motor. Información real y contrastada por expertos.">
+        content="Guías de reparación, consejos de mantenimiento y trucos para ahorrar en el taller. Artículos escritos por expertos y optimizados por IA.">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="garage-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .blog-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .blog-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-tag {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            line-height: 1.3;
+        }
+
+        .blog-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .read-more {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
@@ -22,148 +85,256 @@
     <nav class="navbar">
         <div class="container nav-container">
             <div class="logo">
-                <a href="index.html"
-                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
-                    <span class="logo-icon">🔧</span>
-                    <span class="logo-text">Mecánico IA <span class="accent">24/7</span></span>
+                <a href="index.html" style="text-decoration: none; color: white;">
+                    <span class="logo-icon">🔧</span> Mecánico IA
                 </a>
             </div>
-            <ul class="nav-menu" id="navMenu">
+            <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Inicio</a></li>
                 <li><a href="index.html#diagnostico" class="nav-link">Diagnóstico</a></li>
                 <li><a href="blog.html" class="nav-link active">Blog</a></li>
-                <li><a href="index.html#mi-garage" class="nav-link">Mi Garage</a></li>
+                <li><a href="garage.html" class="nav-link">Mi Garage</a></li>
             </ul>
-            <button class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
         </div>
     </nav>
 
-    <!-- Blog Hero -->
-    <section class="hero" style="min-height: 40vh; padding-top: 120px; padding-bottom: 4rem;">
-        <div class="hero-background"></div>
+    <section class="module-section" style="padding-top: 120px; min-height: 100vh;">
         <div class="container">
-            <div class="section-header" style="text-align: center;">
-                <h1 class="section-title">La Biblia del Motor</h1>
-                <p class="section-description">Análisis profundos, verdades incómodas y guías definitivas para cuidar tu
-                    coche y tu bolsillo.</p>
+            <div class="module-header">
+                <h1 class="module-title">Blog de Mecánica</h1>
+                <p class="module-subtitle">Guías, trucos y consejos para mantener tu coche a punto.</p>
             </div>
-        </div>
-    </section>
 
-    <!-- Blog Grid -->
-    <section class="features" style="padding: 0 0 4rem 0;">
-        <div class="container">
             <div class="blog-grid">
-
-                <!-- 1. FRENOS (Refactorizado) -->
-                <article class="blog-card" onclick="window.location.href='blog/ruido-frenos.html'">
-                    <div class="blog-category">Seguridad</div>
-                    <h2 class="blog-title">¿Por Qué Mi Coche Hace Ruido al Frenar? La Guía Definitiva</h2>
-                    <p class="blog-excerpt">No te la juegues. Analizamos los 7 tipos de ruidos de frenos, desde
-                        chirridos inofensivos hasta señales de peligro mortal. Precios y soluciones 2025.</p>
-                    <div class="blog-meta"><span>📖 8 min</span><span>🔥 Muy Buscado</span></div>
-                </article>
-
-                <!-- 2. CHECK ENGINE (Refactorizado) -->
-                <article class="blog-card" onclick="window.location.href='blog/luz-check-engine.html'">
-                    <div class="blog-category">Diagnóstico</div>
-                    <h2 class="blog-title">Luz Check Engine: ¿Pánico o Tontería? Qué Hacer Realmente</h2>
-                    <p class="blog-excerpt">La luz amarilla que nadie quiere ver. Te explicamos cómo leer los códigos tú
-                        mismo, cuándo puedes seguir conduciendo y cuándo llamar a la grúa.</p>
-                    <div class="blog-meta"><span>📖 10 min</span><span>⚠️ Esencial</span></div>
-                </article>
-
-                <!-- 3. POTENCIA (Refactorizado) -->
-                <article class="blog-card" onclick="window.location.href='blog/perdida-potencia.html'">
-                    <div class="blog-category">Averías</div>
-                    <h2 class="blog-title">Mi Coche No Tira: Diagnóstico de Pérdida de Potencia</h2>
-                    <p class="blog-excerpt">¿Turbo? ¿EGR? ¿Caudalímetro? Desgranamos las causas por las que tu coche
-                        parece una tortuga y cómo evitar que te estafen en el taller.</p>
-                    <div class="blog-meta"><span>📖 9 min</span><span>🔧 Técnico</span></div>
-                </article>
-
-                <!-- 4. ELÉCTRICO VS DIESEL (Nuevo - Polémica) -->
-                <article class="blog-card" onclick="window.location.href='blog/verdad-coche-electrico.html'">
-                    <div class="blog-category" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">Polémica
+                <!-- Artículo 1 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Diagnóstico</span>
+                        <h3><a href="blog/testigos-tablero-significado.html"
+                                style="color: inherit; text-decoration: none;">Guía de Testigos del Tablero</a></h3>
+                        <p>¿Qué significa esa luz roja o amarilla? Descubre la gravedad de cada testigo y qué hacer.</p>
+                        <a href="blog/testigos-tablero-significado.html" class="read-more">Leer artículo →</a>
                     </div>
-                    <h2 class="blog-title">La Verdad Incómoda: ¿Te Están Engañando con el Coche Eléctrico?</h2>
-                    <p class="blog-excerpt">Analizamos sin pelos en la lengua la rentabilidad real, la vida de las
-                        baterías y si realmente compensa cambiar tu viejo diésel hoy.</p>
-                    <div class="blog-meta"><span>📖 12 min</span><span>💬 Debate</span></div>
                 </article>
 
-                <!-- 5. ITV 2025 (Nuevo - Utilidad) -->
-                <article class="blog-card" onclick="window.location.href='blog/itv-trucos.html'">
-                    <div class="blog-category">Legal</div>
-                    <h2 class="blog-title">ITV 2025: Trucos Legales para Pasarla a la Primera</h2>
-                    <p class="blog-excerpt">Los inspectores no quieren que sepas esto. Guía paso a paso para revisar tu
-                        coche antes de la cita y ahorrarte el "Desfavorable".</p>
-                    <div class="blog-meta"><span>📖 7 min</span><span>✅ Útil</span></div>
+                <!-- Artículo 2 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Averías</span>
+                        <h3><a href="blog/coche-no-arranca.html" style="color: inherit; text-decoration: none;">Mi Coche
+                                No Arranca</a></h3>
+                        <p>5 causas comunes: batería, motor de arranque, alternador... Diagnóstico rápido.</p>
+                        <a href="blog/coche-no-arranca.html" class="read-more">Leer artículo →</a>
+                    </div>
                 </article>
 
-                <!-- 6. SEGUNDA MANO (Nuevo - Guía) -->
-                <article class="blog-card" onclick="window.location.href='blog/compra-segunda-mano.html'">
-                    <div class="blog-category">Compraventa</div>
-                    <h2 class="blog-title">Cómo Comprar Coche de Segunda Mano sin que te Estafen</h2>
-                    <p class="blog-excerpt">Afeitado de kilómetros, accidentes ocultos y vicios ocultos. La checklist
-                        definitiva que debes llevar contigo al ver un coche usado.</p>
-                    <div class="blog-meta"><span>📖 15 min</span><span>💰 Ahorro</span></div>
+                <!-- Artículo 3 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Frenos</span>
+                        <h3><a href="blog/ruidos-frenos-chirridos.html"
+                                style="color: inherit; text-decoration: none;">¿Por qué chirrían los frenos?</a></h3>
+                        <p>Pastillas gastadas, cristalizadas o suciedad. Soluciones y precios.</p>
+                        <a href="blog/ruidos-frenos-chirridos.html" class="read-more">Leer artículo →</a>
+                    </div>
                 </article>
 
-                <!-- 7. ADBLUE (Nuevo - Específico) -->
-                <article class="blog-card" onclick="window.location.href='blog/adblue-averias.html'">
-                    <div class="blog-category">Diesel</div>
-                    <h2 class="blog-title">La Pesadilla del AdBlue: Averías de 1000€ y Cómo Evitarlas</h2>
-                    <p class="blog-excerpt">El sistema anticontaminación que está arruinando a miles de conductores.
-                        Cristalización, fallo de bomba y soluciones preventivas.</p>
-                    <div class="blog-meta"><span>📖 6 min</span><span>📉 Problema Común</span></div>
+                <!-- Artículo 4 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Motor</span>
+                        <h3><a href="blog/humo-blanco-azul-negro.html" style="color: inherit; text-decoration: none;">El
+                                Color del Humo</a></h3>
+                        <p>Dime de qué color es el humo (blanco, azul, negro) y te diré qué avería tienes.</p>
+                        <a href="blog/humo-blanco-azul-negro.html" class="read-more">Leer artículo →</a>
+                    </div>
                 </article>
 
-                <!-- 8. MANTENIMIENTO BARATO (Nuevo - Ahorro) -->
-                <article class="blog-card" onclick="window.location.href='blog/mantenimiento-low-cost.html'">
-                    <div class="blog-category">Ahorro</div>
-                    <h2 class="blog-title">Mantenimiento Low-Cost: Ahorra 500€/Año sin Romper tu Coche</h2>
-                    <p class="blog-excerpt">Qué recambios puedes comprar baratos y en cuáles debes gastar dinero.
-                        Aceites, filtros y neumáticos: dónde está el límite del ahorro.</p>
-                    <div class="blog-meta"><span>📖 8 min</span><span>💸 Trucos</span></div>
+                <!-- Artículo 5 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Dirección</span>
+                        <h3><a href="blog/vibracion-volante-causas.html"
+                                style="color: inherit; text-decoration: none;">Vibración en el Volante</a></h3>
+                        <p>Causas de vibración a 100km/h o al frenar. Equilibrado vs Alineación.</p>
+                        <a href="blog/vibracion-volante-causas.html" class="read-more">Leer artículo →</a>
+                    </div>
                 </article>
 
+                <!-- Artículo 6 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Climatización</span>
+                        <h3><a href="blog/aire-acondicionado-no-enfria.html"
+                                style="color: inherit; text-decoration: none;">Aire Acondicionado no enfría</a></h3>
+                        <p>¿Fuga de gas o compresor roto? Cómo diagnosticarlo tú mismo.</p>
+                        <a href="blog/aire-acondicionado-no-enfria.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 7 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Potencia</span>
+                        <h3><a href="blog/coche-pierde-potencia.html"
+                                style="color: inherit; text-decoration: none;">Pérdida de Potencia</a></h3>
+                        <p>Modo emergencia, Turbo, Caudalímetro y EGR. Por qué tu coche no corre.</p>
+                        <a href="blog/coche-pierde-potencia.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 8 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Electricidad</span>
+                        <h3><a href="blog/bateria-o-alternador.html"
+                                style="color: inherit; text-decoration: none;">¿Batería o Alternador?</a></h3>
+                        <p>La prueba definitiva de las luces para saber qué componente falla.</p>
+                        <a href="blog/bateria-o-alternador.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 9 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Avería Grave</span>
+                        <h3><a href="blog/junta-culata-sintomas.html"
+                                style="color: inherit; text-decoration: none;">Junta de Culata</a></h3>
+                        <p>Síntomas de la avería más temida: Mayonesa en el aceite y calentones.</p>
+                        <a href="blog/junta-culata-sintomas.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 10 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Mantenimiento</span>
+                        <h3><a href="blog/correa-distribucion-cuando-cambiar.html"
+                                style="color: inherit; text-decoration: none;">Correa de Distribución</a></h3>
+                        <p>Cuándo cambiarla por kilómetros o años para evitar romper el motor.</p>
+                        <a href="blog/correa-distribucion-cuando-cambiar.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 11 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Transmisión</span>
+                        <h3><a href="blog/embrague-gastado-sintomas.html"
+                                style="color: inherit; text-decoration: none;">Embrague Gastado</a></h3>
+                        <p>5 señales de que tu embrague patina y está llegando a su fin.</p>
+                        <a href="blog/embrague-gastado-sintomas.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 12 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Diesel</span>
+                        <h3><a href="blog/filtro-particulas-diesel-limpieza.html"
+                                style="color: inherit; text-decoration: none;">Filtro de Partículas (DPF)</a></h3>
+                        <p>Cómo hacer una regeneración forzada y limpiar el filtro obstruido.</p>
+                        <a href="blog/filtro-particulas-diesel-limpieza.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 13 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Refrigeración</span>
+                        <h3><a href="blog/liquido-refrigerante-baja-nivel.html"
+                                style="color: inherit; text-decoration: none;">Consumo de Refrigerante</a></h3>
+                        <p>¿Por qué baja el nivel? Fugas externas vs fugas internas.</p>
+                        <a href="blog/liquido-refrigerante-baja-nivel.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 14 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Ruidos</span>
+                        <h3><a href="blog/ruido-motor-taca-taca.html"
+                                style="color: inherit; text-decoration: none;">Ruidos en el Motor</a></h3>
+                        <p>Identifica el "Taca Taca", silbidos de turbo y grillos de correas.</p>
+                        <a href="blog/ruido-motor-taca-taca.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 15 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Comparativa</span>
+                        <h3><a href="blog/mantenimiento-coche-electrico-vs-combustion.html"
+                                style="color: inherit; text-decoration: none;">Eléctrico vs Gasolina</a></h3>
+                        <p>Comparativa real de costes de mantenimiento. ¿Cuál es más barato?</p>
+                        <a href="blog/mantenimiento-coche-electrico-vs-combustion.html" class="read-more">Leer artículo
+                            →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 16 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Neumáticos</span>
+                        <h3><a href="blog/neumaticos-desgaste-irregular.html"
+                                style="color: inherit; text-decoration: none;">Desgaste de Neumáticos</a></h3>
+                        <p>Qué dice el dibujo de tus ruedas sobre la alineación y la presión.</p>
+                        <a href="blog/neumaticos-desgaste-irregular.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 17 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Motor</span>
+                        <h3><a href="blog/valvula-egr-sucia-sintomas.html"
+                                style="color: inherit; text-decoration: none;">Válvula EGR Sucia</a></h3>
+                        <p>Síntomas, limpieza y problemas de anularla en la ITV.</p>
+                        <a href="blog/valvula-egr-sucia-sintomas.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 18 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Suspensión</span>
+                        <h3><a href="blog/amortiguadores-gastados-peligros.html"
+                                style="color: inherit; text-decoration: none;">Amortiguadores Gastados</a></h3>
+                        <p>El peligro invisible: aumento de frenada y pérdida de control.</p>
+                        <a href="blog/amortiguadores-gastados-peligros.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 19 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Temperatura</span>
+                        <h3><a href="blog/termostato-coche-fallos.html"
+                                style="color: inherit; text-decoration: none;">Fallo del Termostato</a></h3>
+                        <p>¿Coche frío o caliente? Diagnóstico de termostato abierto o cerrado.</p>
+                        <a href="blog/termostato-coche-fallos.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
+
+                <!-- Artículo 20 -->
+                <article class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-tag">Encendido</span>
+                        <h3><a href="blog/bujias-calentadores-fallos.html"
+                                style="color: inherit; text-decoration: none;">Bujías y Calentadores</a></h3>
+                        <p>Fallos de encendido en gasolina y diesel. Cuándo cambiarlos.</p>
+                        <a href="blog/bujias-calentadores-fallos.html" class="read-more">Leer artículo →</a>
+                    </div>
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <span class="logo-icon">🔧</span>
-                        <span class="logo-text">Mecánico IA 24/7</span>
-                    </div>
-                    <p class="footer-description">
-                        Tu asistente automotriz inteligente. Diagnósticos precisos, consejos expertos.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <h4>Enlaces</h4>
-                    <ul>
-                        <li><a href="index.html">Inicio</a></li>
-                        <li><a href="blog.html">Blog</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Mecánico IA 24/7. Todos los derechos reservados.</p>
-            </div>
+        <div class="container" style="text-align: center; color: var(--text-secondary);">
+            <p>© 2025 Mecánico IA 24/7. Todos los derechos reservados.</p>
         </div>
     </footer>
-
-    <script src="app.js"></script>
 </body>
 
 </html>

@@ -131,10 +131,11 @@
             </div>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#inicio" class="nav-link active">Inicio</a></li>
-                <li><a href="#diagnostico" class="nav-link">Diagnóstico</a></li>
-                <li><a href="#luces" class="nav-link">Luces del Tablero</a></li>
+                <li><a href="diagnostico.html" class="nav-link">Diagnóstico IA</a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="garage.html" class="nav-link">Mi Garage</a></li>
+                <li><a href="https://prueba-imp.onrender.com/" target="_blank" class="nav-link"
+                        style="color: #FFD700;">Importar Coche 🇩🇪</a></li>
             </ul>
             <button class="menu-toggle" id="menuToggle">
                 <span></span>
@@ -162,13 +163,14 @@
                     y consejos personalizados de mantenimiento. Todo en un solo lugar.
                 </p>
                 <div class="hero-cta">
-                    <button class="btn btn-primary" id="startDiagnosis">
+                    <a href="diagnostico.html" class="btn btn-primary" id="startDiagnosis"
+                        style="text-decoration: none;">
                         <span>Iniciar Diagnóstico</span>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </button>
+                    </a>
                     <button class="btn btn-secondary" id="learnMore">
                         Ver Cómo Funciona
                     </button>
@@ -230,131 +232,94 @@
                 <p class="section-description">Herramientas inteligentes para todos tus problemas automotrices</p>
             </div>
             <div class="features-grid">
-                <div class="feature-card" data-module="diagnostico">
+                <div class="feature-card" onclick="window.location.href='diagnostico.html'">
                     <div class="feature-icon">🔍</div>
                     <h3 class="feature-title">Diagnóstico Inteligente</h3>
                     <p class="feature-description">Describe el problema y obtén un diagnóstico detallado con causas
                         probables, gravedad y soluciones.</p>
                     <button class="feature-btn">Diagnosticar Ahora</button>
                 </div>
-                <div class="feature-card" data-module="luces">
+                <div class="feature-card" onclick="window.location.href='diagnostico.html'">
                     <div class="feature-icon">💡</div>
                     <h3 class="feature-title">Luces del Tablero</h3>
-                    <p class="feature-description">¿Se encendió una luz? Te explico qué significa, qué tan grave es y
-                        qué hacer inmediatamente.</p>
+                    <p class="feature-description">¿Se encendió una luz? Pregúntale al chat qué significa y qué hacer
+                        inmediatamente.</p>
                     <button class="feature-btn">Consultar Luz</button>
                 </div>
-                <div class="feature-card" data-module="sonidos">
+                <div class="feature-card" onclick="window.location.href='diagnostico.html'">
                     <div class="feature-icon">🔊</div>
                     <h3 class="feature-title">Analizador de Sonidos</h3>
-                    <p class="feature-description">Describe el ruido que hace tu coche y te diré qué puede estar
-                        fallando.</p>
+                    <p class="feature-description">Describe el ruido que hace tu coche (clac-clac, silbido...) y te diré
+                        qué puede fallar.</p>
                     <button class="feature-btn">Analizar Ruido</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Diagnostic Module -->
-    <section id="diagnostico" class="module-section diagnostic-module">
-        <div class="container">
+    <!-- Importation Module (New) -->
+    <section id="importacion" class="module-section"
+        style="background: linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(26, 31, 58, 0.95) 100%), url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80'); background-size: cover; background-attachment: fixed; position: relative; overflow: hidden;">
+        <div class="container" style="position: relative; z-index: 2;">
             <div class="module-header">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <div>
-                        <h2 class="module-title">Diagnóstico Inteligente</h2>
-                        <p class="module-subtitle">Cuéntame qué le pasa a tu coche y te ayudaré a identificar el
-                            problema</p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button onclick="exportChatToPDF()" class="btn btn-secondary"
-                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Exportar diagnóstico">
-                            📄 Exportar
-                        </button>
-                        <button onclick="shareChatToWhatsApp()" class="btn btn-secondary"
-                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Compartir por WhatsApp">
-                            📱 Compartir
-                        </button>
-                        <button onclick="clearChatHistory()" class="btn btn-secondary"
-                            style="padding: 0.5rem 1rem; font-size: 0.875rem;" title="Limpiar conversación">
-                            🗑️ Limpiar
-                        </button>
-                    </div>
-                </div>
+                <span class="hero-badge"
+                    style="background: rgba(255, 215, 0, 0.1); border-color: #FFD700; color: #FFD700; margin-bottom: 1rem;">
+                    <span class="badge-dot" style="background: #FFD700;"></span> Nuevo Servicio Partner
+                </span>
+                <h2 class="module-title">Calcula Precio Importación Coche Alemania</h2>
+                <p class="module-subtitle">¿Has visto un coche en Alemania y quieres traerlo? Calcula al instante el
+                    precio final con impuestos, transporte y matriculación incluidos.</p>
             </div>
-            <div class="diagnostic-container">
-                <div class="chat-interface">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message assistant-message">
-                            <div class="message-avatar">🔧</div>
-                            <div class="message-content">
-                                <div class="message-text">
-                                    ¡Hola! Soy tu Mecánico IA. Cuéntame qué problema tiene tu coche: ruidos extraños,
-                                    pérdida de potencia, vibraciones, humo, olores... Lo que sea. Cuanto más detalles me
-                                    des,
-                                    mejor podré ayudarte.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-input-container">
-                        <div class="chat-suggestions" id="chatSuggestions">
-                            <button class="suggestion-chip">Mi coche hace ruido metálico al frenar</button>
-                            <button class="suggestion-chip">Luz del motor encendida qué significa</button>
-                            <button class="suggestion-chip">Motor pierde potencia al acelerar</button>
-                            <button class="suggestion-chip">Sale humo blanco del escape</button>
-                            <button class="suggestion-chip">Vibra el volante a alta velocidad</button>
-                            <button class="suggestion-chip">Aire acondicionado no enfría</button>
-                        </div>
-                        <div class="chat-input-wrapper">
-                            <textarea id="chatInput" class="chat-input"
-                                placeholder="Describe el problema de tu coche..." rows="1"></textarea>
-                            <button class="send-btn" id="sendMessage">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 8L11 13" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="diagnostic-info">
-                    <div class="info-card">
-                        <h3>💡 Consejos para un mejor diagnóstico</h3>
-                        <ul>
-                            <li>Describe cuándo ocurre el problema (arranque, marcha, frenado...)</li>
-                            <li>Menciona si hay ruidos, olores o humos</li>
-                            <li>Indica el modelo y año de tu coche si es posible</li>
-                            <li>Explica si el problema es constante o intermitente</li>
-                        </ul>
-                    </div>
-                    <div class="info-card">
-                        <h3>🎯 ¿Qué obtendrás?</h3>
-                        <ul>
-                            <li><strong>Causas probables</strong> ordenadas por frecuencia</li>
-                            <li><strong>Nivel de gravedad</strong> del problema</li>
-                            <li><strong>Rango de costes</strong> estimados de reparación</li>
-                            <li><strong>Consejos preventivos</strong> para evitar daños mayores</li>
-                        </ul>
-                    </div>
+
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <div class="feature-card"
+                    style="max-width: 600px; width: 100%; text-align: center; border-color: var(--primary);">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🇩🇪 ➡️ 🇪🇸</div>
+                    <h3 class="feature-title">Calculadora de Importación</h3>
+                    <p class="feature-description">Evita sorpresas. Nuestra herramienta partner te desglosa todos los
+                        costes: ITV, Hacienda, DGT, Placas y Transporte.</p>
+                    <a href="https://prueba-imp.onrender.com/" target="_blank" class="btn btn-primary"
+                        style="width: 100%; justify-content: center; font-size: 1.2rem;">
+                        Calcular Precio Final Ahora
+                    </a>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">*Servicio externo de
+                        confianza</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Dashboard Lights Module -->
-    <section id="luces" class="module-section lights-module">
+    <!-- New Diagnostic CTA Section -->
+    <section id="diagnostico" class="module-section" style="text-align: center; padding: 4rem 1rem;">
         <div class="container">
             <div class="module-header">
-                <h2 class="module-title">Luces del Tablero</h2>
-                <p class="module-subtitle">Identifica qué significa cada luz y qué hacer al respecto</p>
+                <h2 class="module-title">Diagnóstico Profesional con IA</h2>
+                <p class="module-subtitle">Hemos actualizado nuestra herramienta. Ahora tienes un chat completo,
+                    historial de conversaciones y diagnósticos más precisos.</p>
             </div>
-            <div class="lights-search">
-                <input type="text" id="lightsSearch" class="search-input"
-                    placeholder="Buscar por nombre o descripción (ej: motor, frenos, aceite...)">
-            </div>
-            <div class="lights-grid" id="lightsGrid">
-                <!-- Lights will be populated by JavaScript -->
+
+            <div
+                style="background: var(--bg-card); padding: 3rem; border-radius: 2rem; border: 1px solid var(--border); max-width: 800px; margin: 0 auto; position: relative; overflow: hidden;">
+                <div
+                    style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(78, 205, 196, 0.1) 0%, transparent 70%); z-index: 0;">
+                </div>
+
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🤖 💬</div>
+                    <h3 style="font-size: 2rem; margin-bottom: 1rem; color: white;">Nuevo Chat Inteligente</h3>
+                    <ul
+                        style="text-align: left; max-width: 400px; margin: 0 auto 2rem auto; color: var(--text-secondary); list-style: none;">
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Historial de Chats:</strong> Guarda tus
+                            diagnósticos.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Pantalla Completa:</strong> Mejor experiencia de
+                            uso.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Más Preciso:</strong> Nuevo modelo de IA.</li>
+                    </ul>
+
+                    <a href="diagnostico.html" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 3rem;">
+                        Abrir Chat de Diagnóstico 🚀
+                    </a>
+                </div>
             </div>
         </div>
     </section>
