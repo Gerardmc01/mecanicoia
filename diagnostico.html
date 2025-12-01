@@ -613,18 +613,9 @@
             userInput.value = '';
             userInput.style.height = 'auto';
 
-            // 2. Guardar en historial local
+            // 2. Obtener referencia al chat actual
             const chat = chats.find(c => c.id === currentChatId);
-            if (chat) {
-                chat.messages.push({ role: 'user', content: text });
-
-                // Actualizar título si es el primer mensaje
-                if (chat.messages.length === 1) {
-                    chat.title = text.substring(0, 30) + '...';
-                    renderHistory();
-                }
-                saveChats();
-            }
+            if (!chat) return;
 
             // 3. Mostrar indicador de "escribiendo..."
             const loadingDiv = document.createElement('div');
@@ -645,16 +636,20 @@
 
             try {
                 // 4. Llamar a la API
-                // Construir historial para contexto
+                // Preparar historial (excluyendo el mensaje actual que acabamos de añadir a la UI pero no al chat object todavía)
+                // Nota: El worker espera { message: "...", history: [...] }
                 const historyForApi = chat.messages.map(m => ({
-                    role: m.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: m.content }]
+                    role: m.role,
+                    content: m.content
                 }));
 
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: historyForApi })
+                    body: JSON.stringify({
+                        message: text,
+                        history: historyForApi
+                    })
                 });
 
                 const data = await response.json();
@@ -663,14 +658,23 @@
                 document.getElementById('loadingIndicator').remove();
 
                 if (data.error) {
-                    appendMessageToUI('assistant', '⚠️ Error: ' + data.error.message);
-                } else {
-                    const reply = data.candidates[0].content.parts[0].text;
+                    appendMessageToUI('assistant', '⚠️ Error: ' + data.error);
+                } else if (data.response) {
+                    const reply = data.response;
                     appendMessageToUI('assistant', reply);
 
                     // Guardar respuesta
+                    chat.messages.push({ role: 'user', content: text }); // Guardamos el user msg ahora
                     chat.messages.push({ role: 'assistant', content: reply });
+
+                    // Actualizar título si es el primer mensaje
+                    if (chat.messages.length <= 2) {
+                        chat.title = text.substring(0, 30) + '...';
+                        renderHistory();
+                    }
                     saveChats();
+                } else {
+                    appendMessageToUI('assistant', '⚠️ Error: Respuesta inesperada del servidor.');
                 }
 
             } catch (error) {
